@@ -704,7 +704,64 @@ function setNum(s,secId,raw){
   if(x!==null&&parseFloat(String(raw).replace(/<[^>]*>/g,'').replace(',','.'))>100)norm='100';
   r.num=norm;
   if(x!==null){r.level=levelFor(x);regenBlocksFor(s,secId)}
+  recalcRanks();refreshRanks();
   return norm;
+}
+
+/* ===== Kalkulasi Nilai, Rata-rata, Peringkat & Juara (otomatis & langsung) ===== */
+function fmt2(x){return String(Math.round(x*100)/100).replace('.',',')}
+function avgOf(s){
+  var t=0,c=0;
+  D.sections.forEach(function(sec){var x=parseNum(((s.sc||{})[sec.id]||{}).num);if(x!==null){t+=x;c++}});
+  return c?{total:t,avg:t/c,count:c}:null;
+}
+function rankInfo(s){
+  var a=avgOf(s);if(!a)return null;
+  var rb=plainText(s.rombel),key=Math.round(a.avg*100),r=1,n=0;
+  D.students.forEach(function(x){
+    if(plainText(x.rombel)!==rb)return;
+    var ax=avgOf(x);if(!ax)return;
+    n++;if(Math.round(ax.avg*100)>key)r++;
+  });
+  return {rank:r,n:n,avg:a.avg,total:a.total,count:a.count};
+}
+function rankLabel(r){return r<=3?'Juara '+r:'Peringkat '+r}
+function juaraText(s,ri){
+  var nm=plainText(s.nama)||'Ananda',rb=plainText(s.rombel)||'kelompok';
+  if(ri.rank<=3)return nm+' meraih '+rankLabel(ri.rank)+' di '+rb+' dengan nilai rata-rata '+fmt2(ri.avg)+' dari '+ri.n+' anak. Selamat dan terus semangat belajar!';
+  return nm+' berada pada peringkat '+ri.rank+' dari '+ri.n+' anak di '+rb+' dengan nilai rata-rata '+fmt2(ri.avg)+'. Terus semangat dan tingkatkan prestasinya!';
+}
+function recalcRanks(){
+  D.students.forEach(function(s){
+    var ri=rankInfo(s);
+    if(s.rankAuto!==false)s.peringkat=ri?rankLabel(ri.rank):'';
+    if(s.juaraAuto!==false)s.juara=ri?esc(juaraText(s,ri)):'';
+  });
+}
+function summaryTexts(s){
+  var ri=rankInfo(s);
+  if(!ri)return {total:'–',avg:'–',rank:'Belum ada nilai',ket:'Isi nilai untuk melihat rata-rata dan peringkat.'};
+  var lv=levelFor(ri.avg);
+  return {
+    total:fmt2(ri.total)+' (dari '+ri.count+' bidang)',
+    avg:fmt2(ri.avg)+' · '+abbrOf(lv)+' ('+labelOf(lv)+')',
+    rank:rankLabel(ri.rank)+' dari '+ri.n+' anak ('+(plainText(s.rombel)||'-')+')',
+    ket:plainText(s.juara)
+  };
+}
+function refreshRanks(){
+  var s=cur(),m=summaryTexts(s),e;
+  if((e=$('#sumTotal')))e.textContent=m.total;
+  if((e=$('#sumAvg')))e.textContent=m.avg;
+  if((e=$('#sumRank')))e.textContent=m.rank;
+  if((e=$('#sumKet')))e.textContent=m.ket;
+  document.querySelectorAll('[data-p="s.peringkat"]').forEach(function(el){if(document.activeElement!==el)el.innerHTML=s.peringkat||''});
+  document.querySelectorAll('[data-p="s.juara"]').forEach(function(el){if(document.activeElement!==el)el.innerHTML=s.juara||''});
+  D.students.forEach(function(st){
+    var ri=rankInfo(st),a=$('#avg-'+st.id),r=$('#rk-'+st.id);
+    if(a)a.textContent=ri?fmt2(ri.avg):'–';
+    if(r)r.textContent=ri?rankLabel(ri.rank):'–';
+  });
 }
 
 var PAGE_SNIPPETS={
@@ -912,7 +969,8 @@ if(!D.school.lblPeringkat)D.school.lblPeringkat='Peringkat / Juara';
 if(!D.school.hPeringkat)D.school.hPeringkat='Keterangan Peringkat / Juara';
 if(D.school&&D.school.accent)document.documentElement.style.setProperty('--p-accent',D.school.accent);
 if(!Array.isArray(D.scale)||D.scale.length<4)D.scale=scaleCopy();
-D.students.forEach(function(s){s.sc=s.sc||{};s.bn=s.bn||{};if(s.peringkat==null)s.peringkat='';if(s.juara==null)s.juara=''});
+D.students.forEach(function(s){s.sc=s.sc||{};s.bn=s.bn||{};if(s.peringkat==null)s.peringkat='';if(s.juara==null)s.juara='';if(s.rankAuto===undefined)s.rankAuto=!plainText(s.peringkat);if(s.juaraAuto===undefined)s.juaraAuto=!plainText(s.juara)});
+recalcRanks();
 
 var ui={tab:'siswa',view:'raport',confirm:null,msg:'Data siap & tersimpan otomatis.',role:null,copiedStamp:false};
 var saveTimer=null;
@@ -1127,7 +1185,7 @@ function renderToolbar(){
       '<label class="paperpick" title="Pilih Ukuran Kertas">Kertas: <select id="paperSizeSel"><option value="A4" '+(D.school.paperSize==='A4'?'selected':'')+'>A4</option><option value="F4" '+(D.school.paperSize==='F4'?'selected':'')+'>F4 (Folio)</option></select></label>'+
     '</div>'+
     '<div class="tgroup">'+
-      (r?'<button class="btn primary" data-act="fillAll">✨ Auto Narasi</button><button class="btn" data-act="pdf">🖨 Print / PDF</button><button class="btn" data-act="word">📄 Word (.doc)</button><button class="btn" data-act="exportExcel">📊 Excel</button><label class="colorpick" title="Warna Tema">🎨 <input type="color" id="themeColor" value="'+esc(D.school.accent||'#17766a')+'"></label>'
+      (r?'<button class="btn primary" data-act="fillAll">✨ Auto Narasi</button><button class="btn" data-act="autoRank" title="Isi ulang peringkat &amp; juara otomatis dari nilai">🏆 Peringkat Otomatis</button><button class="btn" data-act="pdf">🖨 Print / PDF</button><button class="btn" data-act="word">📄 Word (.doc)</button><button class="btn" data-act="exportExcel">📊 Excel</button><label class="colorpick" title="Warna Tema">🎨 <input type="color" id="themeColor" value="'+esc(D.school.accent||'#17766a')+'"></label>'
         :'<button class="btn" data-act="exportExcel">📊 Unduh Excel</button><p>Isi angka 0–100 pada tabel.</p>')+
     '</div>';
 }
@@ -1272,6 +1330,11 @@ function paperHTML(){
     runhead()+
     '<h2 class="h3">'+edSpan('school.hRingkas','Ringkasan Penilaian')+'</h2>'+
     '<div class="tblwrap"><table class="rtbl"><thead><tr><th class="c">No.</th><th>Bidang Penilaian</th><th class="c">Nilai</th><th class="c">Kode</th><th>Keterangan</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    (function(){var m=summaryTexts(s);return '<div class="note"><h3 class="h3">Rekapitulasi Nilai, Rata-rata &amp; Peringkat</h3>'+
+      '<div class="idrow"><span>Jumlah nilai</span><b id="sumTotal">'+esc(m.total)+'</b></div>'+
+      '<div class="idrow"><span>Rata-rata</span><b id="sumAvg">'+esc(m.avg)+'</b></div>'+
+      '<div class="idrow"><span>Peringkat</span><b id="sumRank">'+esc(m.rank)+'</b></div>'+
+      '<div class="kt" id="sumKet">'+esc(m.ket)+'</div></div>';})()+
     '<div class="note">'+edSpan('school.notePenilaian','Catatan penilaian','sub')+'</div>'+
     pgno(3)+
   '</section>';
@@ -1359,19 +1422,19 @@ function paperHTML(){
 function renderPaper(){ $('#paperwrap').innerHTML=paperHTML(); }
 
 function renderNilai(){
-  var head='<tr><th scope="col">Siswa</th>'+D.sections.map(function(sec){return '<th scope="col">'+esc(plainText(sec.title))+'</th>'}).join('')+'<th scope="col">Terisi</th></tr>';
+  var head='<tr><th scope="col">Siswa</th>'+D.sections.map(function(sec){return '<th scope="col">'+esc(plainText(sec.title))+'</th>'}).join('')+'<th scope="col">Rata-rata</th><th scope="col">Peringkat</th><th scope="col">Terisi</th></tr>';
   var rows=D.students.map(function(s){
     return '<tr data-sid="'+s.id+'"><th scope="row"><button class="linkbtn" data-act="open" data-id="'+s.id+'">'+esc(plainText(s.nama)||'(tanpa nama)')+'</button></th>'+
       D.sections.map(function(sec){
         var r=s.sc[sec.id]||{};
         return '<td><input class="nin" id="n-'+s.id+'-'+sec.id+'" data-nsid="'+s.id+'" data-sec="'+sec.id+'" value="'+esc(plainText(r.num))+'" inputmode="decimal" placeholder="–"><span class="cabbr">'+esc(abbrOf(r.level))+'</span></td>';
-      }).join('')+'<td class="cnt">'+scored(s)+'/'+D.sections.length+'</td></tr>';
+      }).join('')+(function(){var ri=rankInfo(s);return '<td><b id="avg-'+s.id+'">'+(ri?fmt2(ri.avg):'–')+'</b></td><td><b id="rk-'+s.id+'">'+(ri?rankLabel(ri.rank):'–')+'</b></td>'})()+'<td class="cnt">'+scored(s)+'/'+D.sections.length+'</td></tr>';
   }).join('');
   $('#paperwrap').innerHTML='<div class="nilai no-print"><div class="tblwrap"><table class="ntbl"><thead>'+head+'</thead><tbody>'+rows+'</tbody></table></div>'+
     '<p class="hint">'+legendText()+'</p></div>';
 }
 
-function renderMain(){ applyPaperSize(); renderToolbar(); if(ui.view==='nilai')renderNilai(); else renderPaper(); }
+function renderMain(){ recalcRanks(); applyPaperSize(); renderToolbar(); if(ui.view==='nilai')renderNilai(); else renderPaper(); }
 function renderAll(){ renderPanel(); renderMain(); }
 
 function exportToWord(){
@@ -1420,6 +1483,7 @@ function exportToWord(){
     '<p><b>'+(D.school.hPeringkat||'Keterangan Peringkat / Juara')+':</b><br>'+(s.juara||'-')+'</p>'+
     '<h3>RINGKASAN PENILAIAN</h3>'+
     '<table><tr><th>No</th><th>Bidang Penilaian</th><th>Nilai</th><th>Kode</th><th>Keterangan</th></tr>'+rowsHTML+'</table>'+
+    (function(){var m=summaryTexts(s);return '<p><b>Jumlah Nilai:</b> '+esc(m.total)+'<br><b>Rata-rata:</b> '+esc(m.avg)+'<br><b>Peringkat:</b> '+esc(m.rank)+'</p>'})()+
     '<div class="pagebreak"></div>'+
     '<h3>NARASI PERKEMBANGAN</h3>'+blksHTML+
     '<h3>PORTOFOLIO & REKOMENDASI</h3>'+
@@ -1447,12 +1511,13 @@ function exportToWord(){
 function exportToExcel(){
   var headers=['Nama Anak','Panggilan','NIK','NISN','JK','Tempat Tanggal Lahir','Agama','Rombel','Orang Tua','TB (cm)','BB (kg)','LK (cm)','Sakit','Izin','Alpa'];
   D.sections.forEach(function(sec){headers.push(plainText(sec.title))});
-  headers.push('Peringkat / Juara');headers.push('Keterangan Juara');
+  headers.push('Peringkat / Juara');headers.push('Keterangan Juara');headers.push('Jumlah Nilai');headers.push('Rata-rata');
   var lines=[headers.map(function(h){return '"'+h.replace(/"/g,'""')+'"'}).join(';')];
   D.students.forEach(function(s){
     var row=[plainText(s.nama),plainText(s.panggilan),plainText(s.nik),plainText(s.nisn),plainText(s.jk),plainText(s.ttl),plainText(s.agama),plainText(s.rombel),plainText(s.ortu),plainText(s.tb),plainText(s.bb),plainText(s.lk),plainText(s.sakit),plainText(s.izin),plainText(s.alpa)];
     D.sections.forEach(function(sec){row.push(plainText((s.sc[sec.id]||{}).num))});
     row.push(plainText(s.peringkat));row.push(plainText(s.juara));
+    var _a=avgOf(s);row.push(_a?fmt2(_a.total):'');row.push(_a?fmt2(_a.avg):'');
     lines.push(row.map(function(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'}).join(';'));
   });
   var blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8;'});
@@ -1548,6 +1613,9 @@ document.addEventListener('input',function(e){
   if(ds.p){
     setv(ds.p, valStr);
     syncPath(ds.p, t);
+    if(ds.p==='s.peringkat')cur().rankAuto=false;
+    if(ds.p==='s.juara')cur().juaraAuto=false;
+    if(ds.p==='s.nama'||ds.p==='s.rombel'){recalcRanks();refreshRanks()}
     if((ds.p==='s.nama'||ds.p==='s.rombel'||ds.p==='school.npsn')&&ui.tab==='siswa') renderPanel();
   }else if(ds.stamp){
     D.school[ds.stamp] = t.value;
@@ -1701,6 +1769,9 @@ document.addEventListener('click',function(e){
         });
       });
       renderAll();save();setStatus('Skala nilai diterapkan ulang.');break;
+    case 'autoRank':
+      s.rankAuto=true;s.juaraAuto=true;recalcRanks();renderPaper();save();
+      setStatus('Peringkat & keterangan juara dihitung ulang otomatis dari nilai.');break;
     case 'rebuildCover':
       if(!confirm('Buat ulang lembar sampul? Teks sampul (yayasan, sekolah, NPSN, alamat, judul, label) akan dikembalikan ke bawaan. Foto, nilai, dan data siswa tidak berubah.'))break;
       var seedD=seed().school;
