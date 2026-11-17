@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-Raport Kurikulum Merdeka - TK Mutiara Harapan</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Library Export PDF & Word (Google Docs Compatible) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body class="paper-a4 theme-emerald">
+
+  <!-- ================= LAYAR LOGIN PIN ================= -->
+  <div id="login-overlay" class="overlay-screen">
+    <div class="login-card">
+      <div class="login-badge">SISTEM E-RAPORT PAUD / TK</div>
+      <h2>TK MUTIARA HARAPAN</h2>
+      <p class="subtitle">Kec. Tanjung Medan, Kab. Rokan Hilir, Prov. Riau</p>
+      
+      <div class="form-group">
+        <label for="pin-input">Masukkan PIN Keamanan Sekolah</label>
+        <input type="password" id="pin-input" maxlength="10" placeholder="•••••" autocomplete="off" />
+        <small id="login-error" class="error-text hidden">PIN salah! Silakan coba lagi.</small>
+      </div>
+
+      <button id="btn-login" class="btn btn-primary btn-block">Masuk Aplikasi</button>
+
+      <div class="divider"><span>atau</span></div>
+
+      <!-- Akses Pihak ke-2 / Ke-3 / Tukang Print -->
+      <button id="btn-guest-mode" class="btn btn-outline btn-block" title="Buka file .json hasil ekspor sekolah untuk dicetak atau diedit">
+        🖨️ Mode Percetakan / Pihak Ke-3 (Buka File / Lihat Raport)
+      </button>
+      <p class="hint-text">PIN Default: <strong>12345</strong> (Dapat diubah di menu Pengaturan Kepala Sekolah)</p>
+    </div>
+  </div>
+
+  <!-- ================= TOOLBAR NAVIGASI (TIDAK IKUT TERCETAK) ================= -->
+  <header id="app-toolbar" class="no-print hidden">
+    <div class="toolbar-top">
+      <div class="brand">
+        <strong>E-RAPORT TK MUTIARA HARAPAN</strong>
+        <span id="role-badge" class="badge">Mode Admin/Guru</span>
+      </div>
+      <div class="toolbar-actions">
+        <button id="btn-open-students" class="btn btn-sm btn-light">👥 Data Siswa (<span id="student-count">0</span>)</button>
+        <button id="btn-open-settings" class="btn btn-sm btn-light">⚙️ Pengaturan & Ganti PIN</button>
+        <button id="btn-export-backup" class="btn btn-sm btn-info" title="Kirim file ini ke tukang print / pihak ke-3">📤 Kirim/Simpan File Proyek (.json)</button>
+        <label class="btn btn-sm btn-info file-label" title="Muat file proyek dari sekolah">
+          📥 Buka File Proyek
+          <input type="file" id="import-backup-input" accept=".json" hidden />
+        </label>
+        <button id="btn-logout" class="btn btn-sm btn-danger">🔒 Keluar</button>
+      </div>
+    </div>
+
+    <div class="toolbar-controls">
+      <div class="control-item">
+        <label>Pilih Siswa:</label>
+        <select id="select-student"></select>
+      </div>
+
+      <div class="control-item">
+        <label>Ukuran Kertas:</label>
+        <select id="select-paper">
+          <option value="a4">A4 (210 × 297 mm)</option>
+          <option value="f4">F4 / Folio (215 × 330 mm)</option>
+        </select>
+      </div>
+
+      <div class="control-item">
+        <label>Tema Warna:</label>
+        <select id="select-theme">
+          <option value="theme-emerald">Hijau Zamrud (Default)</option>
+          <option value="theme-blue">Biru Akademik</option>
+          <option value="theme-teal">Toska Modern</option>
+          <option value="theme-amber">Cokelat Emas Klasik</option>
+          <option value="theme-purple">Ungu Ceria PAUD</option>
+        </select>
+      </div>
+
+      <div class="control-item action-buttons">
+        <button id="btn-edit-current" class="btn btn-warning">✏️ Edit Data & Nilai</button>
+        <button id="btn-print" class="btn btn-primary">🖨️ Print Langsung</button>
+        <button id="btn-download-pdf" class="btn btn-success">📄 Unduh PDF</button>
+        <button id="btn-download-doc" class="btn btn-secondary">📝 Unduh Google Doc (.doc)</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= AREA DOKUMEN RAPORT (SIAP CETAK) ================= -->
+  <main id="raport-workspace" class="hidden">
+    <div id="raport-document" class="raport-sheet">
+      
+      <!-- KOP SURAT SEKOLAH -->
+      <div class="kop-surat">
+        <div class="kop-logo">
+          <div class="logo-circle">TK</div>
+        </div>
+        <div class="kop-text">
+          <h3 id="view-yayasan">YAYASAN PENDIDIKAN MUTIARA HARAPAN</h3>
+          <h1 id="view-school-name">TK MUTIARA HARAPAN</h1>
+          <p id="view-school-address">Alamat: Sei Meranti, Kec. Tanjung Medan, Kab. Rokan Hilir, Prov. Riau - Kode Pos 28983</p>
+          <p id="view-school-contact">Email: tkmutiaraharapantanjungmedan@gmail.com | NPSN: <span id="view-npsn">-</span></p>
+        </div>
+      </div>
+      <div class="kop-line"></div>
+
+      <div class="doc-title">
+        <h2>LAPORAN PERKEMBANGAN PESERTA DIDIK</h2>
+        <p>KURIKULUM MERDEKA PENDIDIKAN ANAK USIA DINI (PAUD)</p>
+      </div>
+
+      <!-- IDENTITAS PESERTA DIDIK -->
+      <table class="identity-table">
+        <tr>
+          <td width="18%">Nama Peserta Didik</td>
+          <td width="2%">:</td>
+          <td width="35%"><strong id="r-nama">-</strong></td>
+          <td width="18%">Semester / TA</td>
+          <td width="2%">:</td>
+          <td width="25%"><span id="r-semester">I (Ganjil) / 2026-2027</span></td>
+        </tr>
+        <tr>
+          <td>NIK / NISN</td>
+          <td>:</td>
+          <td><span id="r-nik">-</span> / <span id="r-nisn">-</span></td>
+          <td>Kelompok / Rombel</td>
+          <td>:</td>
+          <td><span id="r-rombel">Rombel B</span></td>
+        </tr>
+        <tr>
+          <td>Tempat, Tgl Lahir</td>
+          <td>:</td>
+          <td><span id="r-ttl">-</span></td>
+          <td>Agama</td>
+          <td>:</td>
+          <td><span id="r-agama">-</span></td>
+        </tr>
+        <tr>
+          <td>Jenis Kelamin</td>
+          <td>:</td>
+          <td><span id="r-jk">-</span></td>
+          <td>Anak Ke-</td>
+          <td>:</td>
+          <td><span id="r-anak-ke">-</span></td>
+        </tr>
+        <tr>
+          <td>Nama Orang Tua</td>
+          <td>:</td>
+          <td>Ayah: <span id="r-ayah">-</span><br/>Ibu: <span id="r-ibu">-</span></td>
+          <td>Pekerjaan Ortu</td>
+          <td>:</td>
+          <td>Ayah: <span id="r-pek-ayah">-</span><br/>Ibu: <span id="r-pek-ibu">-</span></td>
+        </tr>
+        <tr>
+          <td>Alamat Lengkap</td>
+          <td>:</td>
+          <td colspan="4"><span id="r-alamat">-</span></td>
+        </tr>
+      </table>
+
+      <!-- CAPAIAN PEMBELAJARAN (3 ELEMEN KURIKULUM MERDEKA + P5) -->
+      <div class="section-box">
+        <div class="section-header">1. NILAI AGAMA DAN BUDI PEKERTI</div>
+        <div class="section-body" id="r-agama-narasi"></div>
+      </div>
+
+      <div class="section-box">
+        <div class="section-header">2. JATI DIRI</div>
+        <div class="section-body" id="r-jatidiri-narasi"></div>
+      </div>
+
+      <div class="section-box">
+        <div class="section-header">3. DASAR-DASAR LITERASI, MATEMATIKA, SAINS, TEKNOLOGI, REKAYASA, DAN SENI</div>
+        <div class="section-body" id="r-literasi-narasi"></div>
+      </div>
+
+      <div class="section-box">
+        <div class="section-header">4. PROJEK PENGUATAN PROFIL PELAJAR PANCASILA (P5)</div>
+        <div class="section-body" id="r-p5-narasi"></div>
+      </div>
+
+      <!-- DATA PERTUMBUHAN & KEHADIRAN -->
+      <div class="two-col-grid">
+        <div class="grid-col">
+          <table class="mini-table">
+            <thead>
+              <tr><th colspan="2">DATA PERTUMBUHAN & KESEHATAN</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Berat Badan</td><td><strong id="r-bb">-</strong> kg</td></tr>
+              <tr><td>Tinggi Badan</td><td><strong id="r-tb">-</strong> cm</td></tr>
+              <tr><td>Lingkar Kepala</td><td><strong id="r-lk">-</strong> cm</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="grid-col">
+          <table class="mini-table">
+            <thead>
+              <tr><th colspan="2">KETIDAKHADIRAN</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Sakit</td><td><strong id="r-sakit">0</strong> hari</td></tr>
+              <tr><td>Izin</td><td><strong id="r-izin">0</strong> hari</td></tr>
+              <tr><td>Tanpa Keterangan</td><td><strong id="r-alpha">0</strong> hari</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- REFLEKSI ORANG TUA -->
+      <div class="section-box">
+        <div class="section-header">REFLEKSI & CATATAN ORANG TUA / WALI</div>
+        <div class="section-body" id="r-refleksi-ortu"></div>
+      </div>
+
+      <!-- TANDA TANGAN -->
+      <div class="signature-grid">
+        <div class="sig-box">
+          <p>Mengetahui,<br/>Orang Tua / Wali Murid</p>
+          <div class="sig-space"></div>
+          <p class="sig-name" id="r-ttd-ortu">( ........................................ )</p>
+        </div>
+        <div class="sig-box">
+          <p><span id="r-tempat-tgl">Tanjung Medan, 19 Desember 2026</span><br/>Guru Kelas / Wali Rombel</p>
+          <div class="sig-space"></div>
+          <p class="sig-name"><u id="r-nama-guru">Guru Kelas TK B</u></p>
+          <p class="sig-nip">NIP/NUPTK: <span id="r-nip-guru">-</span></p>
+        </div>
+      </div>
+
+      <div class="signature-center">
+        <p>Mengetahui,<br/>Kepala Sekolah TK Mutiara Harapan</p>
+        <div class="sig-space"></div>
+        <p class="sig-name"><u id="r-nama-kepsek">Kepala Sekolah TK Mutiara Harapan</u></p>
+        <p class="sig-nip">NIP/NUPTK: <span id="r-nip-kepsek">-</span></p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= MODAL EDIT DATA & NILAI RAPORT ================= -->
+  <div id="modal-edit" class="modal hidden">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3>✏️ Edit Data Siswa & Capaian Raport</h3>
+        <button class="close-modal" data-close="modal-edit">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-edit-student">
+          <input type="hidden" id="edit-id" />
+          <h4 class="form-section-title">A. Identitas Peserta Didik</h4>
+          <div class="form-grid-3">
+            <div><label>Nama Lengkap</label><input type="text" id="edit-nama" required /></div>
+            <div><label>Jenis Kelamin</label>
+              <select id="edit-jk"><option value="L">Laki-laki (L)</option><option value="P">Perempuan (P)</option></select>
+            </div>
+            <div><label>Rombel</label><input type="text" id="edit-rombel" /></div>
+            <div><label>NIK</label><input type="text" id="edit-nik" /></div>
+            <div><label>NISN</label><input type="text" id="edit-nisn" /></div>
+            <div><label>Agama</label><input type="text" id="edit-agama" /></div>
+            <div><label>Tempat Lahir</label><input type="text" id="edit-tempat-lahir" /></div>
+            <div><label>Tanggal Lahir (YYYY-MM-DD)</label><input type="text" id="edit-tgl-lahir" /></div>
+            <div><label>Anak Ke-</label><input type="text" id="edit-anak-ke" /></div>
+          </div>
+
+          <h4 class="form-section-title">B. Orang Tua & Alamat</h4>
+          <div class="form-grid-2">
+            <div><label>Nama Ayah</label><input type="text" id="edit-ayah" /></div>
+            <div><label>Pekerjaan Ayah</label><input type="text" id="edit-pek-ayah" /></div>
+            <div><label>Nama Ibu</label><input type="text" id="edit-ibu" /></div>
+            <div><label>Pekerjaan Ibu</label><input type="text" id="edit-pek-ibu" /></div>
+          </div>
+          <div class="form-group mt-1">
+            <label>Alamat Lengkap</label>
+            <input type="text" id="edit-alamat" />
+          </div>
+
+          <h4 class="form-section-title">C. Pertumbuhan & Kehadiran</h4>
+          <div class="form-grid-6">
+            <div><label>BB (kg)</label><input type="text" id="edit-bb" /></div>
+            <div><label>TB (cm)</label><input type="text" id="edit-tb" /></div>
+            <div><label>LK (cm)</label><input type="text" id="edit-lk" /></div>
+            <div><label>Sakit</label><input type="number" id="edit-sakit" min="0" /></div>
+            <div><label>Izin</label><input type="number" id="edit-izin" min="0" /></div>
+            <div><label>Alpha</label><input type="number" id="edit-alpha" min="0" /></div>
+          </div>
+
+          <h4 class="form-section-title">D. Deskripsi Capaian Perkembangan (Kurikulum Merdeka)</h4>
+          <div class="form-group">
+            <label>1. Nilai Agama dan Budi Pekerti</label>
+            <textarea id="edit-agama-narasi" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>2. Jati Diri</label>
+            <textarea id="edit-jatidiri-narasi" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>3. Dasar-dasar Literasi, Matematika, Sains, Teknologi, Rekayasa, dan Seni</label>
+            <textarea id="edit-literasi-narasi" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>4. Projek Penguatan Profil Pelajar Pancasila (P5)</label>
+            <textarea id="edit-p5-narasi" rows="2"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Refleksi Orang Tua</label>
+            <textarea id="edit-refleksi-ortu" rows="2"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-close="modal-edit">Batal</button>
+        <button type="submit" form="form-edit-student" class="btn btn-primary">💾 Simpan Perubahan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL DAFTAR SISWA (TAMBAH / EDIT / HAPUS) ================= -->
+  <div id="modal-students" class="modal hidden">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3>👥 Manajemen Daftar Peserta Didik</h3>
+        <button class="close-modal" data-close="modal-students">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="table-actions">
+          <input type="text" id="search-student" placeholder="Cari nama siswa..." />
+          <button id="btn-add-student" class="btn btn-primary">+ Tambah Siswa Baru</button>
+          <button id="btn-reset-default" class="btn btn-outline" title="Kembalikan data awal dari Excel">↺ Reset Data Excel Awal</button>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama Siswa</th>
+                <th>JK</th>
+                <th>TTL</th>
+                <th>Rombel</th>
+                <th>Orang Tua</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="students-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL PENGATURAN KEPSEK & GANTI PIN ================= -->
+  <div id="modal-settings" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>⚙️ Pengaturan Sekolah & Keamanan PIN Kepala Sekolah</h3>
+        <button class="close-modal" data-close="modal-settings">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-settings">
+          <h4 class="form-section-title">Identitas Sekolah & Penandatangan</h4>
+          <div class="form-group"><label>Nama Yayasan</label><input type="text" id="set-yayasan" /></div>
+          <div class="form-group"><label>Nama Sekolah</label><input type="text" id="set-school-name" /></div>
+          <div class="form-group"><label>Alamat Sekolah</label><input type="text" id="set-school-address" /></div>
+          <div class="form-grid-2">
+            <div><label>NPSN</label><input type="text" id="set-npsn" /></div>
+            <div><label>Semester / Tahun Ajaran</label><input type="text" id="set-semester" /></div>
+            <div><label>Nama Kepala Sekolah</label><input type="text" id="set-kepsek-name" /></div>
+            <div><label>NIP / NUPTK Kepsek</label><input type="text" id="set-kepsek-nip" /></div>
+            <div><label>Nama Guru Kelas</label><input type="text" id="set-guru-name" /></div>
+            <div><label>NIP / NUPTK Guru</label><input type="text" id="set-guru-nip" /></div>
+          </div>
+          <div class="form-group mt-1">
+            <label>Tempat & Tanggal Tanda Tangan Raport</label>
+            <input type="text" id="set-ttd-date" />
+          </div>
+
+          <h4 class="form-section-title">🔐 Keamanan PIN (Khusus Kepala Sekolah)</h4>
+          <div id="pin-change-box">
+            <div class="form-grid-2">
+              <div><label>PIN Lama</label><input type="password" id="set-old-pin" placeholder="Masukkan PIN saat ini" /></div>
+              <div><label>PIN Baru</label><input type="password" id="set-new-pin" placeholder="Kosongkan jika tidak diubah" /></div>
+            </div>
+            <small class="hint-text">Hanya pengguna yang login menggunakan PIN yang dapat mengubah PIN baru.</small>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-close="modal-settings">Tutup</button>
+        <button type="submit" form="form-settings" class="btn btn-primary">💾 Simpan Pengaturan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Urutan Pemanggilan JS: Data dulu, baru Logika Aplikasi -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

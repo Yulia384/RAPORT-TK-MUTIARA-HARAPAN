@@ -1,0 +1,578 @@
+/* ================= VARIABEL TEMA WARNA ================= */
+:root {
+  --primary: #0f766e;
+  --primary-dark: #115e59;
+  --primary-light: #f0fdfa;
+  --border-accent: #0f766e;
+  --bg-app: #e2e8f0;
+  --text-main: #1e293b;
+}
+
+body.theme-emerald {
+  --primary: #0f766e;
+  --primary-dark: #115e59;
+  --primary-light: #f0fdfa;
+  --border-accent: #0f766e;
+}
+
+body.theme-blue {
+  --primary: #1d4ed8;
+  --primary-dark: #1e3a8a;
+  --primary-light: #eff6ff;
+  --border-accent: #1d4ed8;
+}
+
+body.theme-teal {
+  --primary: #0369a1;
+  --primary-dark: #0c4a6e;
+  --primary-light: #f0f9ff;
+  --border-accent: #0369a1;
+}
+
+body.theme-amber {
+  --primary: #92400e;
+  --primary-dark: #78350f;
+  --primary-light: #fffbeb;
+  --border-accent: #92400e;
+}
+
+body.theme-purple {
+  --primary: #6d28d9;
+  --primary-dark: #4c1d95;
+  --primary-light: #f5f3ff;
+  --border-accent: #6d28d9;
+}
+
+/* ================= RESET & GLOBAL ================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  line-height: 1.45;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ================= LAYAR LOGIN PIN ================= */
+.overlay-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, var(--primary-dark), #0f172a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+}
+
+.login-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.login-badge {
+  display: inline-block;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  margin-bottom: 10px;
+}
+
+.login-card h2 {
+  color: var(--primary-dark);
+  font-size: 22px;
+}
+
+.login-card .subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+.login-card .form-group {
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 12px;
+  font-size: 20px;
+  letter-spacing: 6px;
+  text-align: center;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  margin-top: 6px;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 13px;
+  display: block;
+  margin-top: 6px;
+}
+
+.divider {
+  margin: 18px 0;
+  border-bottom: 1px solid #e2e8f0;
+  line-height: 0.1em;
+}
+
+.divider span {
+  background: #fff;
+  padding: 0 10px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.hint-text {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 12px;
+}
+
+/* ================= TOMBOL & INPUT ================= */
+.btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-block { width: 100%; padding: 11px; font-size: 14px; }
+.btn-sm { padding: 6px 10px; font-size: 12px; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-success { background: #15803d; color: #fff; }
+.btn-success:hover { background: #166534; }
+.btn-secondary { background: #2563eb; color: #fff; }
+.btn-secondary:hover { background: #1d4ed8; }
+.btn-warning { background: #d97706; color: #fff; }
+.btn-warning:hover { background: #b45309; }
+.btn-danger { background: #dc2626; color: #fff; }
+.btn-info { background: #0284c7; color: #fff; }
+.btn-light { background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; }
+.btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+
+/* ================= TOOLBAR ================= */
+#app-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #ffffff;
+  border-bottom: 2px solid var(--primary);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.toolbar-top {
+  background: var(--primary-dark);
+  color: #fff;
+  padding: 8px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge {
+  background: rgba(255,255,255,0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  margin-left: 8px;
+}
+
+.toolbar-actions, .toolbar-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-controls {
+  padding: 10px 20px;
+  justify-content: space-between;
+}
+
+.control-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.control-item label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.control-item select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ================= KERTAS RAPORT (A4 & F4) ================= */
+#raport-workspace {
+  padding: 24px 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.raport-sheet {
+  background: #ffffff;
+  color: #000000;
+  font-family: "Times New Roman", Times, serif;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 14mm 16mm;
+  transition: width 0.2s, min-height 0.2s;
+}
+
+/* Ukuran Kertas A4 */
+body.paper-a4 .raport-sheet {
+  width: 210mm;
+  min-height: 297mm;
+}
+
+/* Ukuran Kertas F4 (Folio Indonesia) */
+body.paper-f4 .raport-sheet {
+  width: 215mm;
+  min-height: 330mm;
+}
+
+/* Kop Surat */
+.kop-surat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.logo-circle {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px double #fff;
+  outline: 2px solid var(--primary);
+}
+
+.kop-text {
+  flex: 1;
+}
+
+.kop-text h3 {
+  font-size: 13pt;
+  letter-spacing: 0.5px;
+}
+
+.kop-text h1 {
+  font-size: 17pt;
+  color: var(--primary-dark);
+  margin: 2px 0;
+}
+
+.kop-text p {
+  font-size: 9.5pt;
+}
+
+.kop-line {
+  border-top: 3px solid var(--border-accent);
+  border-bottom: 1px solid var(--border-accent);
+  height: 5px;
+  margin: 8px 0 12px 0;
+}
+
+.doc-title {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.doc-title h2 {
+  font-size: 13pt;
+  text-decoration: underline;
+  color: var(--primary-dark);
+}
+
+.doc-title p {
+  font-size: 10pt;
+  font-weight: bold;
+}
+
+/* Tabel Identitas */
+.identity-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10.5pt;
+  margin-bottom: 12px;
+}
+
+.identity-table td {
+  padding: 3px 4px;
+  vertical-align: top;
+}
+
+/* Kotak Capaian Kurikulum Merdeka */
+.section-box {
+  border: 1.5px solid var(--border-accent);
+  margin-bottom: 10px;
+  border-radius: 4px;
+  overflow: hidden;
+  page-break-inside: avoid;
+}
+
+.section-header {
+  background: var(--primary);
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  font-size: 9.5pt;
+  font-weight: bold;
+  padding: 5px 10px;
+}
+
+.section-body {
+  padding: 8px 10px;
+  font-size: 10.5pt;
+  text-align: justify;
+  background: #ffffff;
+  min-height: 46px;
+}
+
+/* Pertumbuhan & Kehadiran */
+.two-col-grid {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+  page-break-inside: avoid;
+}
+
+.grid-col {
+  flex: 1;
+}
+
+.mini-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10pt;
+}
+
+.mini-table th {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  border: 1px solid var(--border-accent);
+  padding: 4px 8px;
+  font-family: Arial, sans-serif;
+  font-size: 9pt;
+}
+
+.mini-table td {
+  border: 1px solid var(--border-accent);
+  padding: 4px 8px;
+}
+
+/* Tanda Tangan */
+.signature-grid {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  font-size: 10.5pt;
+  page-break-inside: avoid;
+}
+
+.sig-box {
+  width: 45%;
+  text-align: center;
+}
+
+.signature-center {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 10.5pt;
+  page-break-inside: avoid;
+}
+
+.sig-space {
+  height: 52px;
+}
+
+.sig-name {
+  font-weight: bold;
+}
+
+.sig-nip {
+  font-size: 9.5pt;
+}
+
+/* ================= MODAL ================= */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-lg {
+  max-width: 920px;
+}
+
+.modal-header {
+  padding: 14px 20px;
+  background: var(--primary-dark);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 18px 20px;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  padding: 12px 20px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.form-section-title {
+  color: var(--primary-dark);
+  border-bottom: 1px solid #cbd5e1;
+  padding-bottom: 4px;
+  margin: 14px 0 10px 0;
+  font-size: 14px;
+}
+
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.form-grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.mt-1 { margin-top: 10px; }
+
+.modal-body label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 3px;
+  color: #334155;
+}
+
+.modal-body input, .modal-body select, .modal-body textarea {
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+/* Tabel Manajemen Siswa */
+.table-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.table-actions input {
+  flex: 1;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.data-table th, .data-table td {
+  border: 1px solid #cbd5e1;
+  padding: 7px 8px;
+  text-align: left;
+}
+
+.data-table th {
+  background: #f1f5f9;
+}
+
+/* ================= PENGATURAN PRINT LANGSUNG ================= */
+@media print {
+  body {
+    background: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .no-print, #login-overlay, .modal {
+    display: none !important;
+  }
+  #raport-workspace {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .raport-sheet {
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 10mm 14mm !important;
+    width: 100% !important;
+  }
+}
