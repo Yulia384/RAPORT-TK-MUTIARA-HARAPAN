@@ -741,7 +741,7 @@ function snippetPicker(target,label){
 }
 
 function newStudent(o){
-  var s={id:uid(),nama:'',panggilan:'',nisn:'',nik:'',jk:'',ttl:'',agama:'',rombel:'Rombel B',ortu:'',foto:'',tb:'',bb:'',lk:'',sakit:'0',izin:'0',alpa:'0',catatanUmum:'Selama semester ini, Ananda mengikuti berbagai pengalaman belajar melalui bermain, pembiasaan, eksplorasi, karya, dan interaksi bersama teman serta guru.',karya:'Hasil karya anak dapat dipilih dari gambar, kolase, konstruksi balok, kegiatan pra-menulis, atau karya tematik.',proyek:'Ananda terlibat dalam proyek bermain dan eksplorasi sesuai tema pembelajaran.',dokumentasi:'Dokumentasi dapat berupa foto kegiatan bermain, hasil karya, percobaan sederhana, kegiatan kelompok.',berkembang:'Ananda menunjukkan perkembangan melalui pengalaman bermain, pembiasaan, interaksi sosial, dan eksplorasi.',saran:'Lanjutkan stimulasi melalui membaca buku bersama, bermain peran, kegiatan seni, serta pembiasaan mandiri.',ortuNote:'Terima kasih atas pendampingan dan kerja sama keluarga dalam mendukung proses tumbuh kembang Ananda.',sc:{},bn:{}};
+  var s={id:uid(),nama:'',panggilan:'',nisn:'',nik:'',jk:'',ttl:'',agama:'',rombel:'Rombel B',ortu:'',foto:'',tb:'',bb:'',lk:'',sakit:'0',izin:'0',alpa:'0',peringkat:'',juara:'',catatanUmum:'Selama semester ini, Ananda mengikuti berbagai pengalaman belajar melalui bermain, pembiasaan, eksplorasi, karya, dan interaksi bersama teman serta guru.',karya:'Hasil karya anak dapat dipilih dari gambar, kolase, konstruksi balok, kegiatan pra-menulis, atau karya tematik.',proyek:'Ananda terlibat dalam proyek bermain dan eksplorasi sesuai tema pembelajaran.',dokumentasi:'Dokumentasi dapat berupa foto kegiatan bermain, hasil karya, percobaan sederhana, kegiatan kelompok.',berkembang:'Ananda menunjukkan perkembangan melalui pengalaman bermain, pembiasaan, interaksi sosial, dan eksplorasi.',saran:'Lanjutkan stimulasi melalui membaca buku bersama, bermain peran, kegiatan seni, serta pembiasaan mandiri.',ortuNote:'Terima kasih atas pendampingan dan kerja sama keluarga dalam mendukung proses tumbuh kembang Ananda.',sc:{},bn:{}};
   return Object.assign(s,o||{});
 }
 
@@ -855,6 +855,8 @@ function seed(){
       lblNik:'NISN / NIK',
       lblKelompok:'Kelompok',
       lblGuru:'Guru Kelas',
+      lblPeringkat:'Peringkat / Juara',
+      hPeringkat:'Keterangan Peringkat / Juara',
       hProfil:'Profil dan Kehadiran',
       hTumbuh:'Pertumbuhan',
       hHadir:'Kehadiran',
@@ -906,9 +908,11 @@ if(!D.school.npsn)D.school.npsn='70047565';
 if(!D.school.paperSize)D.school.paperSize='A4';
 if(!D.school.stampPos)D.school.stampPos={page:6,x:430,y:585};
 if(!Array.isArray(D.school.extraStamps))D.school.extraStamps=[];
+if(!D.school.lblPeringkat)D.school.lblPeringkat='Peringkat / Juara';
+if(!D.school.hPeringkat)D.school.hPeringkat='Keterangan Peringkat / Juara';
 if(D.school&&D.school.accent)document.documentElement.style.setProperty('--p-accent',D.school.accent);
 if(!Array.isArray(D.scale)||D.scale.length<4)D.scale=scaleCopy();
-D.students.forEach(function(s){s.sc=s.sc||{};s.bn=s.bn||{}});
+D.students.forEach(function(s){s.sc=s.sc||{};s.bn=s.bn||{};if(s.peringkat==null)s.peringkat='';if(s.juara==null)s.juara=''});
 
 var ui={tab:'siswa',view:'raport',confirm:null,msg:'Data siap & tersimpan otomatis.',role:null,copiedStamp:false};
 var saveTimer=null;
@@ -1227,7 +1231,9 @@ function paperHTML(){
       '<div class="row">'+edSpan('school.lblNik','NISN / NIK')+' '+edSpan('s.nik','Nomor Induk / NIK')+'</div>'+
       '<div class="row">'+edSpan('school.lblKelompok','Kelompok')+' '+edSpan('s.rombel','Rombel / Kelompok')+'</div>'+
       '<div class="row">'+edSpan('school.lblGuru','Guru Kelas')+' '+edSpan('school.guru','Nama Guru Kelas')+'</div>'+
+      '<div class="row">'+edSpan('school.lblPeringkat','Peringkat / Juara')+' '+edSpan('s.peringkat','Contoh: Peringkat 1 / Juara Harapan')+'</div>'+
     '</div>'+
+    '<div class="media-actions no-print"><button type="button" class="media-btn" data-act="rebuildCover">♻️ Buat Ulang Lembar Sampul</button></div>'+
     pgno(1)+
   '</section>';
 
@@ -1240,13 +1246,14 @@ function paperHTML(){
       idr('NISN / No. induk','s.nisn','Nomor induk')+idr('NIK','s.nik','Nomor NIK')+
       idr('Jenis kelamin','s.jk','L/P')+idr('Tanggal lahir','s.ttl','Tgl lahir')+
       idr('Agama','s.agama','Agama')+idr('Orang tua / wali','s.ortu','Nama orang tua')+
-      idr('Kelompok / Rombel','s.rombel','Rombel')+
+      idr('Kelompok / Rombel','s.rombel','Rombel')+idr('Peringkat / Juara','s.peringkat','Peringkat / juara')+
     '</div>'+
     '<div class="two">'+
       '<div class="box2"><h3 class="h3">'+edSpan('school.hTumbuh','Pertumbuhan')+'</h3>'+row('Tinggi badan','s.tb','0','cm')+row('Berat badan','s.bb','0','kg')+row('Lingkar kepala','s.lk','0','cm')+'</div>'+
       '<div class="box2"><h3 class="h3">'+edSpan('school.hHadir','Kehadiran')+'</h3>'+row('Sakit','s.sakit','0','hari')+row('Izin','s.izin','0','hari')+row('Alpa','s.alpa','0','hari')+'</div>'+
     '</div>'+
     '<div class="note"><h3 class="h3">'+edSpan('school.hCatUmum','Catatan Umum')+'</h3>'+edArea('s.catatanUmum','Gambaran umum anak selama semester ini')+'</div>'+
+    '<div class="note"><h3 class="h3">'+edSpan('school.hPeringkat','Keterangan Peringkat / Juara')+'</h3>'+edArea('s.juara','Contoh: Ananda meraih Juara 1 lomba mewarnai tingkat kecamatan...')+'</div>'+
     pgno(2)+
   '</section>';
 
@@ -1399,6 +1406,7 @@ function exportToWord(){
         '<tr><td>NIK / Induk</td><td>'+(s.nik||s.nisn||'')+'</td></tr>'+
         '<tr><td>Kelompok</td><td>'+(s.rombel||'')+'</td></tr>'+
         '<tr><td>Guru Kelas</td><td>'+(D.school.guru||'')+'</td></tr>'+
+        '<tr><td>'+(D.school.lblPeringkat||'Peringkat / Juara')+'</td><td>'+(s.peringkat||'-')+'</td></tr>'+
       '</table>'+
     '</div>'+
     '<div class="pagebreak"></div>'+
@@ -1409,6 +1417,7 @@ function exportToWord(){
     '<table><tr><th>Tinggi Badan</th><th>Berat Badan</th><th>Lingkar Kepala</th><th>Sakit</th><th>Izin</th><th>Alpa</th></tr>'+
     '<tr><td align="center">'+plainText(s.tb)+' cm</td><td align="center">'+plainText(s.bb)+' kg</td><td align="center">'+plainText(s.lk)+' cm</td><td align="center">'+plainText(s.sakit)+' hr</td><td align="center">'+plainText(s.izin)+' hr</td><td align="center">'+plainText(s.alpa)+' hr</td></tr></table>'+
     '<p><b>Catatan Umum:</b><br>'+(s.catatanUmum||'')+'</p>'+
+    '<p><b>'+(D.school.hPeringkat||'Keterangan Peringkat / Juara')+':</b><br>'+(s.juara||'-')+'</p>'+
     '<h3>RINGKASAN PENILAIAN</h3>'+
     '<table><tr><th>No</th><th>Bidang Penilaian</th><th>Nilai</th><th>Kode</th><th>Keterangan</th></tr>'+rowsHTML+'</table>'+
     '<div class="pagebreak"></div>'+
@@ -1438,10 +1447,12 @@ function exportToWord(){
 function exportToExcel(){
   var headers=['Nama Anak','Panggilan','NIK','NISN','JK','Tempat Tanggal Lahir','Agama','Rombel','Orang Tua','TB (cm)','BB (kg)','LK (cm)','Sakit','Izin','Alpa'];
   D.sections.forEach(function(sec){headers.push(plainText(sec.title))});
+  headers.push('Peringkat / Juara');headers.push('Keterangan Juara');
   var lines=[headers.map(function(h){return '"'+h.replace(/"/g,'""')+'"'}).join(';')];
   D.students.forEach(function(s){
     var row=[plainText(s.nama),plainText(s.panggilan),plainText(s.nik),plainText(s.nisn),plainText(s.jk),plainText(s.ttl),plainText(s.agama),plainText(s.rombel),plainText(s.ortu),plainText(s.tb),plainText(s.bb),plainText(s.lk),plainText(s.sakit),plainText(s.izin),plainText(s.alpa)];
     D.sections.forEach(function(sec){row.push(plainText((s.sc[sec.id]||{}).num))});
+    row.push(plainText(s.peringkat));row.push(plainText(s.juara));
     lines.push(row.map(function(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'}).join(';'));
   });
   var blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8;'});
@@ -1490,6 +1501,8 @@ function handleExcelImport(text){
         if(num!==null)s.sc[sec.id]={num:String(num),level:levelFor(num)};
       }
     });
+    s.peringkat=cols[15+D.sections.length]||'';
+    s.juara=cols[16+D.sections.length]||'';
     D.blocks.forEach(function(blk){regenB(s,blk)});
     imported.push(s);
   }
@@ -1688,6 +1701,13 @@ document.addEventListener('click',function(e){
         });
       });
       renderAll();save();setStatus('Skala nilai diterapkan ulang.');break;
+    case 'rebuildCover':
+      if(!confirm('Buat ulang lembar sampul? Teks sampul (yayasan, sekolah, NPSN, alamat, judul, label) akan dikembalikan ke bawaan. Foto, nilai, dan data siswa tidak berubah.'))break;
+      var seedD=seed().school;
+      ['yayasan','nama','npsn','tagline','alamat','judul','periode','tahun','lblNpsn','lblAnak','lblNik','lblKelompok','lblGuru','lblPeringkat'].forEach(function(k){D.school[k]=seedD[k]});
+      D.school.extraStamps=(D.school.extraStamps||[]).filter(function(x){return x.page!==1});
+      renderAll();save();setStatus('Lembar sampul dibuat ulang (ukuran sama dengan halaman lain).');
+      break;
     case 'uploadLogo':$('#logoInput').click();break;
     case 'delLogo':D.school.logo='';renderAll();save();break;
     case 'uploadPhoto':$('#photoInput').click();break;
