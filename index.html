@@ -1,400 +1,848 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>E-Raport Kurikulum Merdeka - TK Mutiara Harapan</title>
-  <link rel="stylesheet" href="style.css" />
-  <!-- Library Export PDF & Word (Google Docs Compatible) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>e-Raport TK Mutiara Harapan</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Nunito+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+:root {
+  color-scheme: light;
+  box-sizing: border-box;
+  --bg: #eaf0ef;
+  --panel: #ffffff;
+  --fg: #1b2b2a;
+  --muted: #5a6c6a;
+  --line: #d2ddda;
+  --accent: #17766a;
+  --accent-fg: #ffffff;
+  --accent-soft: #dcefea;
+  --danger: #b3382c;
+  --paper: #ffffff;
+  --ink: #000000;
+  --ink-muted: #222222;
+  --rule: #aeb8b5;
+  --p-accent: #17766a;
+  --p-warm: #e9a825;
+  --f-display: 'Baloo 2', 'Trebuchet MS', system-ui, sans-serif;
+  --f-body: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.5 var(--f-body);
+  padding: 12px;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+  gap: 16px;
+  max-width: 1280px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  body { padding: 8px; }
+  .app { grid-template-columns: 1fr; gap: 12px; }
+}
+
+main { min-width: 0; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: sticky;
+  top: 12px;
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+}
+
+@media (max-width: 960px) {
+  .panel { position: static; max-height: none; }
+}
+
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand svg { width: 36px; height: 36px; flex: none; }
+.brand b { font: 700 1.15rem/1.1 var(--f-display); display: block; }
+.brand span { font-size: 0.76rem; color: var(--muted); }
+
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: var(--bg); padding: 4px; border-radius: 8px; }
+.tab { font: inherit; font-weight: 700; font-size: 0.84rem; border: 0; background: transparent; color: var(--muted); padding: 8px 4px; border-radius: 6px; cursor: pointer; min-height: 40px; }
+.tab[aria-selected="true"] { background: var(--panel); color: var(--accent); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+
+.hint { margin: 0; font-size: 0.82rem; color: var(--muted); }
+.ph { margin: 6px 0 0; font: 700 0.95rem var(--f-display); }
+.pbody { display: flex; flex-direction: column; gap: 10px; }
+.slist, .seclist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.sbtn { width: 100%; text-align: left; font: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--fg); padding: 10px 12px; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; min-height: 44px; }
+.sbtn[aria-current="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.sbtn .sn { font-weight: 700; word-break: break-word; }
+.sbtn .ss { font-size: 0.78rem; color: var(--muted); }
+
+.btn { font: inherit; font-weight: 700; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); cursor: pointer; min-height: 44px; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.btn.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.btn.danger { color: var(--danger); }
+.btn:disabled, .mini:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.srow { display: flex; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+.acts { display: flex; gap: 4px; flex: none; }
+.mini { font: inherit; font-size: 0.8rem; font-weight: 700; min-width: 36px; min-height: 36px; padding: 0 8px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); border-radius: 6px; cursor: pointer; }
+.box { font: 12px/1.4 ui-monospace, Menlo, Consolas, monospace; width: 100%; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); padding: 8px; resize: vertical; }
+.fld { font: inherit; font-size: 0.86rem; width: 100%; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--fg); padding: 8px; min-height: 40px; }
+
+.scgrid { display: grid; grid-template-columns: 55px minmax(0,1fr) 55px; gap: 6px; align-items: center; }
+.scgrid .h { font-size: 0.74rem; font-weight: 700; color: var(--muted); }
+.scgrid .full { grid-column: 1/-1; margin-bottom: 6px; }
+.status { margin: 0; font-size: 0.78rem; color: var(--muted); }
+
+.toolbar { max-width: 900px; margin: 0 auto 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+.toolbar p { margin: 0; font-size: 0.84rem; color: var(--muted); flex: 1 1 200px; }
+.colorpick { display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 700; }
+.colorpick input { width: 36px; height: 36px; padding: 2px; border: 1px solid var(--line); border-radius: 7px; background: #fff; cursor: pointer; }
+.seg { display: inline-flex; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 3px; gap: 3px; }
+.segb { font: inherit; font-weight: 700; font-size: 0.84rem; border: 0; background: transparent; color: var(--muted); padding: 6px 12px; border-radius: 6px; cursor: pointer; min-height: 38px; }
+.segb[aria-selected="true"] { background: var(--accent); color: var(--accent-fg); }
+
+.nilai { max-width: 900px; margin: 0 auto; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.tblwrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.ntbl { border-collapse: collapse; width: 100%; font-size: 0.86rem; min-width: 600px; }
+.ntbl th, .ntbl td { padding: 6px; border-bottom: 1px solid var(--line); text-align: center; vertical-align: middle; }
+.ntbl thead th { font-size: 0.72rem; color: var(--muted); font-weight: 700; }
+.ntbl th[scope="row"] { text-align: left; font-weight: 700; }
+.nin { width: 52px; height: 38px; text-align: center; font: inherit; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--fg); }
+.cabbr { display: block; font-size: 0.7rem; font-weight: 700; color: var(--muted); }
+.cnt { font-size: 0.8rem; color: var(--muted); }
+.linkbtn { font: inherit; font-weight: 700; color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-align: left; }
+
+.sheets { display: flex; flex-direction: column; gap: 20px; max-width: 900px; margin: 0 auto; }
+.page { position: relative; background: var(--paper); color: #000; padding: clamp(16px, 3.5vw, 36px); border-radius: 12px; border: 1px solid #dce6e2; box-shadow: 0 4px 18px rgba(0,0,0,.06); display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.page:not(.cover)::before { content: ""; position: absolute; left: 0; top: 0; width: 6px; height: 100%; background: linear-gradient(180deg, var(--p-accent), #d8b56b); border-radius: 12px 0 0 12px; }
+
+.runhead { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; font-size: 0.76rem; color: var(--ink-muted); border-bottom: 2px solid var(--p-accent); padding-bottom: 6px; }
+.pgno { font-size: 0.74rem; color: var(--ink-muted); text-align: center; margin-top: auto; padding-top: 6px; border-top: 1px solid #e1e9e5; }
+.h3 { font: 700 1.1rem var(--f-display); color: var(--p-accent); margin: 0; }
+.sub { font-size: 0.84rem; color: var(--ink-muted); margin: 0; }
+
+.ed { font: inherit; color: inherit; background: transparent; border: 0; border-bottom: 1px dashed var(--rule); border-radius: 0; padding: 4px 0; width: 100%; outline: none; font-weight: 500; }
+.ed:focus { background: rgba(23,118,106,.08); border-bottom-color: var(--p-accent); }
+textarea.ed { display: block; resize: none; overflow: hidden; line-height: 1.6; border: 1px dashed var(--rule); border-radius: 6px; padding: 8px; min-height: 80px; }
+
+.cover { text-align: center; justify-content: center; align-items: center; min-height: 680px; border: 2px solid var(--p-accent); gap: 14px; }
+.cover .crest { width: 90px; height: 90px; }
+.cover .p-name { font: 700 1.9rem/1.15 var(--f-display); color: var(--p-accent); letter-spacing: 0.03em; text-transform: uppercase; text-align: center; }
+.cover .tag, .cover .addr { font-size: 0.88rem; color: var(--ink-muted); text-align: center; }
+.cover .rule { width: 100px; height: 3px; background: var(--p-warm); border-radius: 2px; margin: 6px 0; }
+.cover .jd { font: 700 1.25rem var(--f-display); text-align: center; }
+.semline { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center; font-weight: 600; width: 100%; }
+.semline .ed { width: 130px; text-align: center; }
+.coverbox { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--rule); border-radius: 10px; padding: 14px; text-align: left; background: linear-gradient(145deg, #fff, #f5faf8); }
+.coverbox .row { display: grid; grid-template-columns: 95px minmax(0,1fr); gap: 8px; align-items: center; font-size: 0.9rem; }
+.coverbox .row span { color: var(--ink-muted); font-weight: 600; }
+.coverbox .big { font: 700 1.2rem var(--f-display); }
+
+.idgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 20px; }
+@media (max-width: 640px) { .idgrid { grid-template-columns: 1fr; } }
+.idrow { display: grid; grid-template-columns: 110px minmax(0,1fr); gap: 6px; align-items: center; font-size: 0.88rem; }
+.idrow span { color: var(--ink-muted); font-weight: 600; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.box2, .note { border: 1px solid #dce6e2; border-radius: 8px; padding: 10px 12px; background: #fff; display: flex; flex-direction: column; gap: 6px; }
+.mrow { display: grid; grid-template-columns: minmax(0,1fr) 80px 30px; gap: 6px; align-items: center; font-size: 0.88rem; }
+.mrow input { text-align: right; }
+
+.rtbl { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.rtbl th, .rtbl td { border: 1px solid var(--rule); padding: 6px; text-align: left; vertical-align: middle; }
+.rtbl th { background: #eef3f2; font-weight: 700; }
+.rtbl .c { text-align: center; }
+.ed.numin { width: 50px; text-align: center; font-weight: 700; color: var(--ink); }
+.kt { font-size: 0.8rem; color: var(--ink-muted); }
+
+.lvlwrap { position: relative; display: inline-block; width: 100%; }
+.lvlwrap::after { content: "\25BE"; position: absolute; right: 6px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 0.7rem; }
+.lvl { appearance: none; -webkit-appearance: none; font: 700 0.78rem var(--f-body); padding: 4px 18px 4px 8px; border-radius: 999px; border: 1px solid #cdd8d5; background: #f1f4f3; color: #55625f; cursor: pointer; width: 100%; }
+.lvl[data-lv="l1"], .lvlpill[data-lv="l1"] { background: #dcf0ea; color: #0d5a4e; border-color: #9fd3c6; }
+.lvl[data-lv="l2"], .lvlpill[data-lv="l2"] { background: #e3ecf8; color: #233f6b; border-color: #aac0e0; }
+.lvl[data-lv="l3"], .lvlpill[data-lv="l3"] { background: #fdf0cf; color: #6b4a05; border-color: #ecd08a; }
+.lvl[data-lv="l4"], .lvlpill[data-lv="l4"] { background: #fbe3df; color: #7a2418; border-color: #e8b3aa; }
+.lvlpill { display: inline-block; font: 700 0.76rem var(--f-body); padding: 2px 8px; border-radius: 999px; border: 1px solid #cdd8d5; background: #f1f4f3; }
+
+.blk { display: flex; flex-direction: column; gap: 8px; border: 1px solid #dce6e2; border-radius: 8px; padding: 10px 12px; background: #fcfefd; }
+.sec-h { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.sec-title { flex: 1 1 200px; font: 700 1rem var(--f-display); color: var(--p-accent); border-bottom: 0; }
+.narrative-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 6px; background: #f1f7f4; border: 1px solid #dce9e3; border-radius: 6px; }
+.narrative-tools select { flex: 1 1 180px; font: inherit; font-size: 0.8rem; padding: 6px; border: 1px solid #bdcec6; border-radius: 6px; background: #fff; min-height: 38px; }
+.tplbtn { font: inherit; font-size: 0.78rem; font-weight: 700; color: var(--p-accent); background: #fff; border: 1px solid var(--rule); border-radius: 6px; padding: 6px 10px; cursor: pointer; min-height: 38px; }
+
+.snippet-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0; padding: 8px; background: #f2f7f5; border: 1px solid #d9e7e1; border-radius: 8px; }
+.snippet-tools label { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; flex: 1 1 220px; font-size: 0.78rem; font-weight: 700; color: #263a35; }
+.snippet-select { width: 100%; min-width: 140px; padding: 6px; border: 1px solid #b9cbc4; border-radius: 6px; background: #fff; font: inherit; font-size: 0.8rem; min-height: 38px; }
+
+.signwrap { border: 1px solid #dce6e2; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.place { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; justify-content: flex-end; font-size: 0.88rem; }
+.place input { width: 130px; }
+.sign { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; text-align: center; font-size: 0.88rem; }
+@media (max-width: 540px) { .sign { grid-template-columns: 1fr; gap: 18px; } }
+.sign .lab { color: var(--ink-muted); font-weight: 600; }
+.sign .gap { height: 50px; }
+.sign input { text-align: center; }
+.sign .line { border-bottom: 1px solid var(--ink); height: 16px; }
+
+@media print {
+  @page { size: A4; margin: 12mm; }
+  html, body { background: #fff !important; padding: 0 !important; }
+  .panel, .toolbar, .no-print, .nilai, .snippet-tools, .narrative-tools { display: none !important; }
+  .app { display: block; }
+  .sheets { gap: 0; max-width: none; }
+  .page { box-shadow: none; border-radius: 0; border: 0; padding: 0; min-height: 270mm; break-after: page; }
+  .page:last-child { break-after: auto; }
+  .page:not(.cover)::before { display: none; }
+  .cover { min-height: 270mm; border: 2px solid var(--p-accent); padding: 10mm; }
+  .ed, textarea.ed { border-color: transparent !important; background: none !important; padding: 2px 0; }
+  .lvl { border-color: transparent; background: none !important; padding: 0; }
+  .lvlwrap::after { display: none; }
+  .box2, .note, .blk, .signwrap { background: #fff !important; break-inside: avoid; }
+  textarea.ed { min-height: 0; height: auto !important; }
+}
+</style>
 </head>
-<body class="paper-a4 theme-emerald">
+<body>
 
-  <!-- ================= LAYAR LOGIN PIN ================= -->
-  <div id="login-overlay" class="overlay-screen">
-    <div class="login-card">
-      <div class="login-badge">SISTEM E-RAPORT PAUD / TK</div>
-      <h2>TK MUTIARA HARAPAN</h2>
-      <p class="subtitle">Kec. Tanjung Medan, Kab. Rokan Hilir, Prov. Riau</p>
-      
-      <div class="form-group">
-        <label for="pin-input">Masukkan PIN Keamanan Sekolah</label>
-        <input type="password" id="pin-input" maxlength="10" placeholder="•••••" autocomplete="off" />
-        <small id="login-error" class="error-text hidden">PIN salah! Silakan coba lagi.</small>
-      </div>
-
-      <button id="btn-login" class="btn btn-primary btn-block">Masuk Aplikasi</button>
-
-      <div class="divider"><span>atau</span></div>
-
-      <!-- Akses Pihak ke-2 / Ke-3 / Tukang Print -->
-      <button id="btn-guest-mode" class="btn btn-outline btn-block" title="Buka file .json hasil ekspor sekolah untuk dicetak atau diedit">
-        🖨️ Mode Percetakan / Pihak Ke-3 (Buka File / Lihat Raport)
-      </button>
-      <p class="hint-text">PIN Default: <strong>12345</strong> (Dapat diubah di menu Pengaturan Kepala Sekolah)</p>
-    </div>
-  </div>
-
-  <!-- ================= TOOLBAR NAVIGASI (TIDAK IKUT TERCETAK) ================= -->
-  <header id="app-toolbar" class="no-print hidden">
-    <div class="toolbar-top">
-      <div class="brand">
-        <strong>E-RAPORT TK MUTIARA HARAPAN</strong>
-        <span id="role-badge" class="badge">Mode Admin/Guru</span>
-      </div>
-      <div class="toolbar-actions">
-        <button id="btn-open-students" class="btn btn-sm btn-light">👥 Data Siswa (<span id="student-count">0</span>)</button>
-        <button id="btn-open-settings" class="btn btn-sm btn-light">⚙️ Pengaturan & Ganti PIN</button>
-        <button id="btn-export-backup" class="btn btn-sm btn-info" title="Kirim file ini ke tukang print / pihak ke-3">📤 Kirim/Simpan File Proyek (.json)</button>
-        <label class="btn btn-sm btn-info file-label" title="Muat file proyek dari sekolah">
-          📥 Buka File Proyek
-          <input type="file" id="import-backup-input" accept=".json" hidden />
-        </label>
-        <button id="btn-logout" class="btn btn-sm btn-danger">🔒 Keluar</button>
-      </div>
-    </div>
-
-    <div class="toolbar-controls">
-      <div class="control-item">
-        <label>Pilih Siswa:</label>
-        <select id="select-student"></select>
-      </div>
-
-      <div class="control-item">
-        <label>Ukuran Kertas:</label>
-        <select id="select-paper">
-          <option value="a4">A4 (210 × 297 mm)</option>
-          <option value="f4">F4 / Folio (215 × 330 mm)</option>
-        </select>
-      </div>
-
-      <div class="control-item">
-        <label>Tema Warna:</label>
-        <select id="select-theme">
-          <option value="theme-emerald">Hijau Zamrud (Default)</option>
-          <option value="theme-blue">Biru Akademik</option>
-          <option value="theme-teal">Toska Modern</option>
-          <option value="theme-amber">Cokelat Emas Klasik</option>
-          <option value="theme-purple">Ungu Ceria PAUD</option>
-        </select>
-      </div>
-
-      <div class="control-item action-buttons">
-        <button id="btn-edit-current" class="btn btn-warning">✏️ Edit Data & Nilai</button>
-        <button id="btn-print" class="btn btn-primary">🖨️ Print Langsung</button>
-        <button id="btn-download-pdf" class="btn btn-success">📄 Unduh PDF</button>
-        <button id="btn-download-doc" class="btn btn-secondary">📝 Unduh Google Doc (.doc)</button>
-      </div>
-    </div>
-  </header>
-
-  <!-- ================= AREA DOKUMEN RAPORT (SIAP CETAK) ================= -->
-  <main id="raport-workspace" class="hidden">
-    <div id="raport-document" class="raport-sheet">
-      
-      <!-- KOP SURAT SEKOLAH -->
-      <div class="kop-surat">
-        <div class="kop-logo">
-          <div class="logo-circle">TK</div>
-        </div>
-        <div class="kop-text">
-          <h3 id="view-yayasan">YAYASAN PENDIDIKAN MUTIARA HARAPAN</h3>
-          <h1 id="view-school-name">TK MUTIARA HARAPAN</h1>
-          <p id="view-school-address">Alamat: Sei Meranti, Kec. Tanjung Medan, Kab. Rokan Hilir, Prov. Riau - Kode Pos 28983</p>
-          <p id="view-school-contact">Email: tkmutiaraharapantanjungmedan@gmail.com | NPSN: <span id="view-npsn">-</span></p>
-        </div>
-      </div>
-      <div class="kop-line"></div>
-
-      <div class="doc-title">
-        <h2>LAPORAN PERKEMBANGAN PESERTA DIDIK</h2>
-        <p>KURIKULUM MERDEKA PENDIDIKAN ANAK USIA DINI (PAUD)</p>
-      </div>
-
-      <!-- IDENTITAS PESERTA DIDIK -->
-      <table class="identity-table">
-        <tr>
-          <td width="18%">Nama Peserta Didik</td>
-          <td width="2%">:</td>
-          <td width="35%"><strong id="r-nama">-</strong></td>
-          <td width="18%">Semester / TA</td>
-          <td width="2%">:</td>
-          <td width="25%"><span id="r-semester">I (Ganjil) / 2026-2027</span></td>
-        </tr>
-        <tr>
-          <td>NIK / NISN</td>
-          <td>:</td>
-          <td><span id="r-nik">-</span> / <span id="r-nisn">-</span></td>
-          <td>Kelompok / Rombel</td>
-          <td>:</td>
-          <td><span id="r-rombel">Rombel B</span></td>
-        </tr>
-        <tr>
-          <td>Tempat, Tgl Lahir</td>
-          <td>:</td>
-          <td><span id="r-ttl">-</span></td>
-          <td>Agama</td>
-          <td>:</td>
-          <td><span id="r-agama">-</span></td>
-        </tr>
-        <tr>
-          <td>Jenis Kelamin</td>
-          <td>:</td>
-          <td><span id="r-jk">-</span></td>
-          <td>Anak Ke-</td>
-          <td>:</td>
-          <td><span id="r-anak-ke">-</span></td>
-        </tr>
-        <tr>
-          <td>Nama Orang Tua</td>
-          <td>:</td>
-          <td>Ayah: <span id="r-ayah">-</span><br/>Ibu: <span id="r-ibu">-</span></td>
-          <td>Pekerjaan Ortu</td>
-          <td>:</td>
-          <td>Ayah: <span id="r-pek-ayah">-</span><br/>Ibu: <span id="r-pek-ibu">-</span></td>
-        </tr>
-        <tr>
-          <td>Alamat Lengkap</td>
-          <td>:</td>
-          <td colspan="4"><span id="r-alamat">-</span></td>
-        </tr>
-      </table>
-
-      <!-- CAPAIAN PEMBELAJARAN (3 ELEMEN KURIKULUM MERDEKA + P5) -->
-      <div class="section-box">
-        <div class="section-header">1. NILAI AGAMA DAN BUDI PEKERTI</div>
-        <div class="section-body" id="r-agama-narasi"></div>
-      </div>
-
-      <div class="section-box">
-        <div class="section-header">2. JATI DIRI</div>
-        <div class="section-body" id="r-jatidiri-narasi"></div>
-      </div>
-
-      <div class="section-box">
-        <div class="section-header">3. DASAR-DASAR LITERASI, MATEMATIKA, SAINS, TEKNOLOGI, REKAYASA, DAN SENI</div>
-        <div class="section-body" id="r-literasi-narasi"></div>
-      </div>
-
-      <div class="section-box">
-        <div class="section-header">4. PROJEK PENGUATAN PROFIL PELAJAR PANCASILA (P5)</div>
-        <div class="section-body" id="r-p5-narasi"></div>
-      </div>
-
-      <!-- DATA PERTUMBUHAN & KEHADIRAN -->
-      <div class="two-col-grid">
-        <div class="grid-col">
-          <table class="mini-table">
-            <thead>
-              <tr><th colspan="2">DATA PERTUMBUHAN & KESEHATAN</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Berat Badan</td><td><strong id="r-bb">-</strong> kg</td></tr>
-              <tr><td>Tinggi Badan</td><td><strong id="r-tb">-</strong> cm</td></tr>
-              <tr><td>Lingkar Kepala</td><td><strong id="r-lk">-</strong> cm</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="grid-col">
-          <table class="mini-table">
-            <thead>
-              <tr><th colspan="2">KETIDAKHADIRAN</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Sakit</td><td><strong id="r-sakit">0</strong> hari</td></tr>
-              <tr><td>Izin</td><td><strong id="r-izin">0</strong> hari</td></tr>
-              <tr><td>Tanpa Keterangan</td><td><strong id="r-alpha">0</strong> hari</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- REFLEKSI ORANG TUA -->
-      <div class="section-box">
-        <div class="section-header">REFLEKSI & CATATAN ORANG TUA / WALI</div>
-        <div class="section-body" id="r-refleksi-ortu"></div>
-      </div>
-
-      <!-- TANDA TANGAN -->
-      <div class="signature-grid">
-        <div class="sig-box">
-          <p>Mengetahui,<br/>Orang Tua / Wali Murid</p>
-          <div class="sig-space"></div>
-          <p class="sig-name" id="r-ttd-ortu">( ........................................ )</p>
-        </div>
-        <div class="sig-box">
-          <p><span id="r-tempat-tgl">Tanjung Medan, 19 Desember 2026</span><br/>Guru Kelas / Wali Rombel</p>
-          <div class="sig-space"></div>
-          <p class="sig-name"><u id="r-nama-guru">Guru Kelas TK B</u></p>
-          <p class="sig-nip">NIP/NUPTK: <span id="r-nip-guru">-</span></p>
-        </div>
-      </div>
-
-      <div class="signature-center">
-        <p>Mengetahui,<br/>Kepala Sekolah TK Mutiara Harapan</p>
-        <div class="sig-space"></div>
-        <p class="sig-name"><u id="r-nama-kepsek">Kepala Sekolah TK Mutiara Harapan</u></p>
-        <p class="sig-nip">NIP/NUPTK: <span id="r-nip-kepsek">-</span></p>
-      </div>
-
-    </div>
+<div class="app">
+  <aside class="panel" id="panel" aria-label="Pengaturan"></aside>
+  <main>
+    <div class="toolbar no-print" id="toolbar"></div>
+    <div id="paperwrap"></div>
   </main>
+</div>
 
-  <!-- ================= MODAL EDIT DATA & NILAI RAPORT ================= -->
-  <div id="modal-edit" class="modal hidden">
-    <div class="modal-content modal-lg">
-      <div class="modal-header">
-        <h3>✏️ Edit Data Siswa & Capaian Raport</h3>
-        <button class="close-modal" data-close="modal-edit">&times;</button>
-      </div>
-      <div class="modal-body">
-        <form id="form-edit-student">
-          <input type="hidden" id="edit-id" />
-          <h4 class="form-section-title">A. Identitas Peserta Didik</h4>
-          <div class="form-grid-3">
-            <div><label>Nama Lengkap</label><input type="text" id="edit-nama" required /></div>
-            <div><label>Jenis Kelamin</label>
-              <select id="edit-jk"><option value="L">Laki-laki (L)</option><option value="P">Perempuan (P)</option></select>
-            </div>
-            <div><label>Rombel</label><input type="text" id="edit-rombel" /></div>
-            <div><label>NIK</label><input type="text" id="edit-nik" /></div>
-            <div><label>NISN</label><input type="text" id="edit-nisn" /></div>
-            <div><label>Agama</label><input type="text" id="edit-agama" /></div>
-            <div><label>Tempat Lahir</label><input type="text" id="edit-tempat-lahir" /></div>
-            <div><label>Tanggal Lahir (YYYY-MM-DD)</label><input type="text" id="edit-tgl-lahir" /></div>
-            <div><label>Anak Ke-</label><input type="text" id="edit-anak-ke" /></div>
-          </div>
+<script>
+(function(){
+var KEY='eraport-tk-mutiara-harapan-v3',OLDKEY='eraport-tk-v2';
+function uid(){return Math.random().toString(36).slice(2,9)}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function $(q){return document.querySelector(q)}
 
-          <h4 class="form-section-title">B. Orang Tua & Alamat</h4>
-          <div class="form-grid-2">
-            <div><label>Nama Ayah</label><input type="text" id="edit-ayah" /></div>
-            <div><label>Pekerjaan Ayah</label><input type="text" id="edit-pek-ayah" /></div>
-            <div><label>Nama Ibu</label><input type="text" id="edit-ibu" /></div>
-            <div><label>Pekerjaan Ibu</label><input type="text" id="edit-pek-ibu" /></div>
-          </div>
-          <div class="form-group mt-1">
-            <label>Alamat Lengkap</label>
-            <input type="text" id="edit-alamat" />
-          </div>
+var SCALE0=[
+  {k:'l1',abbr:'BSB',label:'Berkembang Sangat Baik',min:90,desc:'Anak menunjukkan kemampuan secara konsisten dan mampu menerapkannya secara mandiri atau mengembangkannya dalam situasi baru.'},
+  {k:'l2',abbr:'BSH',label:'Berkembang Sesuai Harapan',min:75,desc:'Anak mampu menunjukkan kemampuan yang diharapkan untuk tujuan pembelajaran dan tahap perkembangannya.'},
+  {k:'l3',abbr:'MB',label:'Mulai Berkembang',min:60,desc:'Anak mulai mencoba, tetapi masih memerlukan arahan atau pengingat.'},
+  {k:'l4',abbr:'BB',label:'Belum Berkembang',min:0,desc:'Anak masih memerlukan banyak bantuan dan contoh dari guru.'}
+];
+function scaleCopy(){return SCALE0.map(function(x){return Object.assign({},x)})}
+function sk(k){return D.scale.find(function(x){return x.k===k})}
+function abbrOf(k){var x=sk(k);return x?x.abbr:''}
+function labelOf(k){var x=sk(k);return x?x.label:''}
+function levelFor(x,sc){
+  var a=(sc||D.scale).slice().sort(function(p,q){return q.min-p.min});
+  for(var i=0;i<a.length;i++){if(x>=a[i].min)return a[i].k}
+  return a[a.length-1].k;
+}
+function parseNum(v){if(v==null||v==='')return null;var x=parseFloat(String(v).replace(',','.'));return isNaN(x)?null:Math.max(0,Math.min(100,x))}
+function fmt(x){return String(Math.round(x*10)/10).replace('.',',')}
+function rangeText(i){var k=D.scale[i];var hi=i===0?'100':fmt(D.scale[i-1].min-1);return fmt(k.min)+'–'+hi}
+function legendText(){return D.scale.map(function(k,i){return esc(k.abbr)+' = '+esc(k.label)+' ('+rangeText(i)+')'}).join(' · ')}
 
-          <h4 class="form-section-title">C. Pertumbuhan & Kehadiran</h4>
-          <div class="form-grid-6">
-            <div><label>BB (kg)</label><input type="text" id="edit-bb" /></div>
-            <div><label>TB (cm)</label><input type="text" id="edit-tb" /></div>
-            <div><label>LK (cm)</label><input type="text" id="edit-lk" /></div>
-            <div><label>Sakit</label><input type="number" id="edit-sakit" min="0" /></div>
-            <div><label>Izin</label><input type="number" id="edit-izin" min="0" /></div>
-            <div><label>Alpha</label><input type="number" id="edit-alpha" min="0" /></div>
-          </div>
+var T={
+ agama:{
+  l1:'{nama} menunjukkan perkembangan yang sangat baik dalam mengenal kegiatan ibadah dan mengungkapkan rasa syukur. {nama} menunjukkan sikap peduli, bersedia berbagi dengan teman, dan mengikuti pembiasaan doa bersama.',
+  l2:'{nama} menunjukkan perkembangan yang sesuai harapan dalam mengenal kegiatan ibadah dan mengungkapkan rasa syukur. {nama} mulai menunjukkan sikap peduli, bersedia berbagi dengan teman, dan mengikuti pembiasaan doa bersama.',
+  l3:'{nama} mulai mengenal kegiatan ibadah dan doa bersama, namun masih memerlukan arahan dan pengingat. {nama} mulai belajar berbagi dan bersikap sopan kepada teman dan guru.',
+  l4:'{nama} masih memerlukan banyak bantuan dan contoh dari guru dalam mengikuti doa bersama dan mengenal kegiatan ibadah. Sikap berbagi dan sopan santun perlu dilatih secara rutin.',
+  saran:'Pembiasaan untuk bersikap jujur, sabar, dan bertanggung jawab perlu terus diperkuat di sekolah maupun di rumah.'
+ },
+ indo:{
+  l1:'{nama} mampu menyimak cerita, menjawab pertanyaan, dan menceritakan kembali bagian cerita dengan bahasanya sendiri. {nama} mengenali huruf dengan baik dan menunjukkan ketertarikan yang besar terhadap buku.',
+  l2:'{nama} mampu menyimak cerita, menjawab pertanyaan sederhana, dan menceritakan kembali bagian cerita dengan bahasanya sendiri. {nama} mulai mengenali huruf dan menunjukkan ketertarikan terhadap buku.',
+  l3:'{nama} mulai dapat menyimak cerita dan menjawab pertanyaan sederhana dengan bantuan guru. {nama} baru mengenali sebagian huruf dan masih perlu dorongan untuk bercerita.',
+  l4:'{nama} masih memerlukan banyak bantuan untuk menyimak cerita dan mengenal huruf. {nama} perlu stimulasi bahasa melalui buku bergambar dan percakapan sehari-hari.',
+  saran:'Keluarga disarankan membacakan cerita setiap hari dan mengajak {nama} berdiskusi tentang tokoh serta peristiwa dalam cerita.'
+ },
+ inggris:{
+  l1:'{nama} mampu mengenali kosakata tentang warna, angka, benda di kelas, dan anggota tubuh, serta mengikuti instruksi seperti stand up, sit down, dan open your book dengan percaya diri.',
+  l2:'{nama} mampu mengenali kosakata sederhana tentang warna, angka, benda di kelas, dan anggota tubuh. {nama} dapat mengikuti instruksi sederhana seperti stand up, sit down, dan open your book.',
+  l3:'{nama} mulai mengenali beberapa kosakata sederhana seperti warna dan angka, dan masih memerlukan contoh atau isyarat untuk mengikuti instruksi dalam bahasa Inggris.',
+  l4:'{nama} masih memerlukan banyak bantuan dan pengulangan untuk mengenal kosakata dan instruksi sederhana dalam bahasa Inggris.',
+  saran:'Latihan percakapan singkat melalui lagu, permainan, dan kegiatan sehari-hari akan membantu meningkatkan keberanian berbicara.'
+ },
+ numsains:{
+  l1:'{nama} menunjukkan rasa ingin tahu yang sangat baik ketika mengamati lingkungan. {nama} mampu mengenali pola, membandingkan ukuran benda, dan menghitung benda konkret dengan tepat.',
+  l2:'{nama} menunjukkan rasa ingin tahu yang baik ketika mengamati lingkungan. {nama} mampu mengenali pola sederhana, membandingkan ukuran benda, dan menghitung benda konkret.',
+  l3:'{nama} mulai tertarik mengamati lingkungan dan mulai mengenal pola, ukuran, serta berhitung benda konkret dengan bantuan guru.',
+  l4:'{nama} masih memerlukan banyak bantuan dan contoh dalam mengenal angka, pola, dan ukuran, serta dalam mengamati lingkungan sekitar.',
+  saran:'Selanjutnya, {nama} dapat dilatih untuk memperkirakan jumlah benda, menjelaskan hasil pengamatan, dan mencoba lebih dari satu cara untuk menyelesaikan masalah.'
+ },
+ sosem:{
+  l1:'{nama} mampu bekerja sama dalam kegiatan kelompok, merapikan alat bermain, dan menyelesaikan tugas sederhana secara mandiri, serta mengungkapkan perasaan dengan kata-kata.',
+  l2:'{nama} mulai mampu bekerja sama dalam kegiatan kelompok, merapikan alat bermain, dan menyelesaikan tugas sederhana. Dalam situasi tertentu, {nama} masih memerlukan pengingat untuk menunggu giliran dan mengungkapkan perasaan dengan kata-kata.',
+  l3:'{nama} mulai belajar bekerja sama dan merapikan alat bermain, namun masih sering memerlukan pengingat untuk menunggu giliran dan mengungkapkan perasaan.',
+  l4:'{nama} masih memerlukan banyak bantuan dalam bekerja sama, menunggu giliran, merapikan barang, dan mengelola emosi.',
+  saran:'Guru dan orang tua dapat mendukung perkembangan ini melalui permainan bergiliran serta pemberian tanggung jawab kecil setiap hari.'
+ },
+ seni:{
+  l1:'{nama} menunjukkan kreativitas yang sangat baik dalam menggambar, bernyanyi, bergerak, dan membangun karya dari berbagai bahan. Gerak tubuh {nama} terkoordinasi dengan baik saat berlari, melompat, menggunting, dan menggambar.',
+  l2:'{nama} menunjukkan kreativitas yang baik dalam berkarya seni, bernyanyi, dan bergerak, serta mulai mencoba merancang bangunan sederhana. Kemampuan motorik kasar dan halus {nama} berkembang sesuai harapan.',
+  l3:'{nama} mulai berani berkarya seni dan mencoba membangun dengan bahan sederhana. Kemampuan menggunting, menggambar, dan menjaga keseimbangan masih perlu banyak latihan.',
+  l4:'{nama} masih memerlukan banyak bantuan dalam berkarya, membangun, dan melakukan gerak dasar serta kegiatan motorik halus.',
+  saran:'Kegiatan seperti menggambar bebas, bermain balok, meronce, dan bermain di luar ruangan dapat dilakukan di rumah.'
+ },
+ sd:{
+  l1:'{nama} mampu fokus, mengikuti instruksi dengan tepat, dan menyelesaikan kegiatan sampai tuntas secara mandiri. {nama} tampak siap menyambut pembelajaran di sekolah dasar.',
+  l2:'{nama} mampu fokus, mengikuti instruksi, dan menyelesaikan kegiatan, meskipun sesekali masih memerlukan pengingat. {nama} berkembang sesuai harapan menuju kesiapan sekolah dasar.',
+  l3:'{nama} mulai mampu mengikuti instruksi dan menyelesaikan kegiatan dengan bantuan guru, dan masih perlu latihan untuk menjaga fokus lebih lama.',
+  l4:'{nama} masih memerlukan banyak bantuan untuk fokus, mengikuti instruksi, dan menyelesaikan kegiatan.',
+  saran:'Kebiasaan rutin seperti menyiapkan tas sendiri dan menyelesaikan tugas kecil di rumah akan membantu kesiapan sekolah dasar.'
+ }
+};
+var GEN={
+ l1:'{nama} menunjukkan perkembangan yang sangat baik pada bagian %t dan mampu melakukannya secara mandiri.',
+ l2:'{nama} menunjukkan perkembangan yang sesuai harapan pada bagian %t, dengan bantuan sesekali dari guru.',
+ l3:'{nama} mulai berkembang pada bagian %t dan masih memerlukan arahan atau pengingat.',
+ l4:'{nama} masih memerlukan banyak bantuan dan contoh dari guru pada bagian %t.'
+};
 
-          <h4 class="form-section-title">D. Deskripsi Capaian Perkembangan (Kurikulum Merdeka)</h4>
-          <div class="form-group">
-            <label>1. Nilai Agama dan Budi Pekerti</label>
-            <textarea id="edit-agama-narasi" rows="3"></textarea>
-          </div>
-          <div class="form-group">
-            <label>2. Jati Diri</label>
-            <textarea id="edit-jatidiri-narasi" rows="3"></textarea>
-          </div>
-          <div class="form-group">
-            <label>3. Dasar-dasar Literasi, Matematika, Sains, Teknologi, Rekayasa, dan Seni</label>
-            <textarea id="edit-literasi-narasi" rows="3"></textarea>
-          </div>
-          <div class="form-group">
-            <label>4. Projek Penguatan Profil Pelajar Pancasila (P5)</label>
-            <textarea id="edit-p5-narasi" rows="2"></textarea>
-          </div>
-          <div class="form-group">
-            <label>Refleksi Orang Tua</label>
-            <textarea id="edit-refleksi-ortu" rows="2"></textarea>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-light" data-close="modal-edit">Batal</button>
-        <button type="submit" form="form-edit-student" class="btn btn-primary">💾 Simpan Perubahan</button>
-      </div>
-    </div>
-  </div>
+var PRAISE=[
+ ['rajin','Rajin dan tekun','Ananda menunjukkan sikap rajin dan tekun. Ia bersemangat mengikuti kegiatan serta berusaha menyelesaikan tugas sampai tuntas.'],
+ ['cerdas','Cepat memahami','Ananda cepat memahami penjelasan dan mampu menghubungkan informasi baru dengan pengalaman yang telah dimiliki.'],
+ ['kreatif','Kreatif dan imajinatif','Ananda memiliki daya imajinasi yang kaya dan mampu menuangkan gagasan melalui karya, permainan, serta kegiatan bercerita.'],
+ ['mandiri','Mandiri','Ananda semakin mandiri dalam memilih kegiatan, menggunakan perlengkapan, merawat diri, dan menyelesaikan tanggung jawab sederhana.'],
+ ['percaya','Percaya diri','Ananda semakin percaya diri untuk mencoba hal baru, menyampaikan pendapat, dan tampil di hadapan teman-temannya.'],
+ ['komunikatif','Komunikatif','Ananda mampu berkomunikasi dengan baik, menyampaikan kebutuhan, serta berbagi cerita dan gagasan dengan bahasa yang santun.'],
+ ['ingin-tahu','Rasa ingin tahu tinggi','Ananda memiliki rasa ingin tahu yang tinggi, aktif mengajukan pertanyaan, dan antusias mengeksplorasi lingkungan sekitarnya.'],
+ ['teliti','Teliti dan cermat','Ananda menunjukkan ketelitian saat mengamati, mencocokkan, menyusun, dan menyelesaikan kegiatan.'],
+ ['disiplin','Disiplin','Ananda mulai konsisten mengikuti kesepakatan kelas, menjaga keteraturan, dan menyelesaikan kegiatan sesuai arahan.'],
+ ['peduli','Peduli dan penyayang','Ananda menunjukkan kepedulian dengan memperhatikan teman, membantu saat diperlukan, dan menjaga lingkungan belajar.'],
+ ['ramah','Ramah dan bersahabat','Ananda bersikap ramah, mudah menyapa, dan membangun hubungan yang hangat dengan teman maupun guru.'],
+ ['santun','Sopan dan santun','Ananda terbiasa menggunakan kata-kata yang santun, menghargai orang lain, dan menunjukkan perilaku yang baik.'],
+ ['jujur','Jujur','Ananda mulai menunjukkan sikap jujur dalam menyampaikan pengalaman, mengakui tindakan, dan mengikuti aturan bersama.'],
+ ['tanggung','Bertanggung jawab','Ananda menunjukkan tanggung jawab dengan menjaga barang, merapikan alat bermain, dan menyelesaikan tugas yang diberikan.'],
+ ['kerja-sama','Pandai bekerja sama','Ananda dapat bekerja sama, berbagi peran, dan berpartisipasi dalam kegiatan kelompok dengan gembira.'],
+ ['pemimpin','Memiliki jiwa kepemimpinan','Ananda berani mengambil inisiatif, memberi contoh positif, dan mengajak teman berpartisipasi dalam kegiatan bersama.'],
+ ['berani','Berani mencoba','Ananda berani mencoba pengalaman baru dan tidak mudah menyerah ketika menghadapi tantangan sederhana.'],
+ ['fokus','Fokus dan tekun','Ananda semakin mampu memusatkan perhatian, mengikuti tahapan kegiatan, dan menyelesaikan pekerjaan dengan baik.'],
+ ['aktif','Aktif berpartisipasi','Ananda aktif terlibat dalam diskusi, permainan, gerak dan lagu, serta berbagai pengalaman belajar.'],
+ ['ekspresif','Ekspresif','Ananda mampu mengekspresikan ide, perasaan, dan pengalaman melalui kata-kata, gerakan, musik, maupun karya seni.'],
+ ['sabar','Sabar dan mampu menunggu giliran','Ananda mulai mampu bersabar, menunggu giliran, dan menghargai kesempatan teman dalam kegiatan bersama.'],
+ ['berbagi','Senang berbagi','Ananda menunjukkan kebiasaan berbagi alat, bahan, dan kesempatan bermain dengan teman-temannya.'],
+ ['pemecah','Pemecah masalah','Ananda mulai mampu mencari cara untuk mengatasi tantangan, mencoba beberapa kemungkinan, dan meminta bantuan secara tepat.'],
+ ['literasi','Minat literasi','Ananda menunjukkan minat terhadap buku, gambar, huruf, cerita, dan kegiatan membaca bersama.'],
+ ['numerasi','Kuat dalam numerasi awal','Ananda antusias mengenal angka, menghitung benda konkret, membandingkan jumlah, serta menemukan pola sederhana.'],
+ ['bahasa','Berbakat dalam bahasa','Ananda menunjukkan perkembangan bahasa yang baik melalui kosakata, percakapan, bercerita, dan keberanian mengungkapkan gagasan.'],
+ ['english','Antusias berbahasa Inggris','Ananda antusias menirukan lagu, mengenali kosakata, dan menggunakan ungkapan bahasa Inggris sederhana dalam rutinitas kelas.'],
+ ['motorik','Koordinasi gerak baik','Ananda menunjukkan koordinasi gerak yang berkembang baik melalui kegiatan berlari, melompat, menari, menggambar, dan meronce.'],
+ ['seni','Apresiasi seni tinggi','Ananda menikmati kegiatan seni dan mampu bereksplorasi dengan warna, bentuk, bunyi, gerak, serta beragam bahan.'],
+ ['adaptif','Mudah beradaptasi','Ananda semakin nyaman mengikuti rutinitas kelas, menyesuaikan diri dengan lingkungan, dan bergabung dalam kegiatan baru.'],
+ ['optimis','Bersemangat dan positif','Ananda hadir dengan semangat positif dan menunjukkan kegembiraan saat terlibat dalam pengalaman belajar.'],
+ ['ibadah','Tekun dalam pembiasaan spiritual','Ananda mengikuti pembiasaan spiritual dengan sikap hormat dan mulai memahami nilai syukur, kasih, serta kebaikan.']
+];
+function praiseOptions(){return '<option value="">Pilih apresiasi anak (siap pakai)…</option>'+PRAISE.map(function(x){return '<option value="'+x[0]+'">'+esc(x[1])+'</option>'}).join('')}
+function praiseSentence(key){var x=PRAISE.find(function(a){return a[0]===key});return x?x[2]:''}
+function callName(s){return (s.panggilan||'').trim()||(s.nama||'').trim().split(/\s+/)[0]||'Ananda'}
+function tplB(blk,lv,nama){
+  var t=T[blk.id];
+  var cap=(t&&t[lv])?t[lv]:GEN[lv].replace('%t',(blk.title||'ini').toLowerCase());
+  var sar=t?t.saran:'';
+  return (cap+(sar?' '+sar:'')).replace(/\{nama\}/g,nama);
+}
+function getS(s,id){return s.sc[id]||(s.sc[id]={num:'',level:''})}
+function getB(s,id){return s.bn[id]||(s.bn[id]={text:'',auto:false})}
+function blockLevel(s,blk,sc){
+  var t=0,c=0;
+  (blk.from||[]).forEach(function(id){var x=parseNum((s.sc[id]||{}).num);if(x!==null){t+=x;c++}});
+  return c?levelFor(t/c,sc):'';
+}
+function regenB(s,blk,sc){
+  var b=getB(s,blk.id);
+  if(b.auto||!(b.text||'').trim()){b.text=tplB(blk,blockLevel(s,blk,sc)||'l2',callName(s));b.auto=true}
+}
+function regenBlocksFor(s,secId){D.blocks.forEach(function(blk){if((blk.from||[]).indexOf(secId)>-1)regenB(s,blk)})}
+function setNum(s,secId,raw){
+  var r=getS(s,secId);
+  var x=parseNum(raw),norm=raw;
+  if(x!==null&&parseFloat(String(raw).replace(',','.'))>100)norm='100';
+  r.num=norm;
+  if(x!==null){r.level=levelFor(x);regenBlocksFor(s,secId)}
+  return norm;
+}
 
-  <!-- ================= MODAL DAFTAR SISWA (TAMBAH / EDIT / HAPUS) ================= -->
-  <div id="modal-students" class="modal hidden">
-    <div class="modal-content modal-lg">
-      <div class="modal-header">
-        <h3>👥 Manajemen Daftar Peserta Didik</h3>
-        <button class="close-modal" data-close="modal-students">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="table-actions">
-          <input type="text" id="search-student" placeholder="Cari nama siswa..." />
-          <button id="btn-add-student" class="btn btn-primary">+ Tambah Siswa Baru</button>
-          <button id="btn-reset-default" class="btn btn-outline" title="Kembalikan data awal dari Excel">↺ Reset Data Excel Awal</button>
-        </div>
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Nama Siswa</th>
-                <th>JK</th>
-                <th>TTL</th>
-                <th>Rombel</th>
-                <th>Orang Tua</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="students-table-body"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+var PAGE_SNIPPETS={
+  karya:[
+    'Ananda menghasilkan karya melalui proses mengamati, mencoba, memilih bahan, dan menuangkan gagasan dengan caranya sendiri.',
+    'Ananda menunjukkan ketekunan saat menyelesaikan karya serta mulai memperhatikan bentuk, warna, susunan, dan detail.',
+    'Ananda berani mengeksplorasi berbagai alat dan bahan serta menunjukkan kreativitas dalam menghasilkan karya.',
+    'Ananda dapat menceritakan ide, pilihan, atau proses sederhana yang dilakukan saat membuat karya.',
+    'Ananda menunjukkan perkembangan koordinasi mata dan tangan melalui kegiatan menggambar, menyusun, membentuk, atau merangkai.',
+    'Ananda menikmati proses berkarya dan menunjukkan rasa bangga terhadap hasil usahanya.'
+  ],
+  proyek:[
+    'Ananda terlibat dalam kegiatan proyek melalui proses mengamati, bertanya, mencoba, dan berbagi pengalaman.',
+    'Ananda menunjukkan rasa ingin tahu serta antusias mengeksplorasi berbagai kemungkinan selama kegiatan berlangsung.',
+    'Ananda mulai mampu menyampaikan ide, memilih cara kerja, dan mengikuti tahapan kegiatan sesuai kemampuannya.',
+    'Ananda berpartisipasi dalam kegiatan bersama, menggunakan alat dan bahan dengan arahan, serta belajar menghargai kontribusi teman.',
+    'Ananda menunjukkan ketekunan ketika menghadapi tantangan dan bersedia mencoba kembali dengan dukungan yang sesuai.',
+    'Ananda dapat menceritakan pengalaman atau hal baru yang diperoleh dari proses kegiatan.'
+  ],
+  dokumentasi:[
+    'Dokumentasi pembelajaran dapat memuat proses anak saat mengamati, mencoba, berdiskusi, bermain, dan menghasilkan karya.',
+    'Catatan dan foto kegiatan menunjukkan keterlibatan anak dalam pengalaman belajar secara individu maupun bersama kelompok.',
+    'Hasil karya, percakapan, dan rekaman proses dapat digunakan sebagai bukti perkembangan anak dari waktu ke waktu.',
+    'Dokumentasi dipilih untuk memperlihatkan proses, usaha, minat, dan kemajuan anak, bukan hanya hasil akhir kegiatan.',
+    'Guru dapat menambahkan tanggal, nama kegiatan, serta keterangan singkat sesuai dokumentasi yang tersedia.'
+  ],
+  berkembang:[
+    'Ananda menunjukkan perkembangan melalui pengalaman bermain, eksplorasi, interaksi, pembiasaan, dan kegiatan sehari-hari.',
+    'Ananda semakin berani mencoba pengalaman baru dan menunjukkan inisiatif sesuai minat serta kemampuannya.',
+    'Ananda mulai mampu mengikuti arahan, menyelesaikan kegiatan, dan menjaga perlengkapan dengan dukungan yang semakin berkurang.',
+    'Ananda menunjukkan kemampuan berkomunikasi, menyampaikan pilihan, dan berbagi pengalaman dengan orang lain.',
+    'Ananda belajar bekerja sama, menunggu giliran, menghargai perbedaan, dan menyelesaikan kegiatan bersama.',
+    'Ananda memperlihatkan kemajuan secara bertahap. Kesempatan berlatih dan penguatan positif akan membantu perkembangannya.',
+    'Ananda menunjukkan rasa ingin tahu, kreativitas, dan kemauan untuk mencoba berbagai cara dalam menyelesaikan kegiatan.'
+  ],
+  saran:[
+    'Berikan kesempatan kepada Ananda untuk mencoba melakukan kegiatan sehari-hari secara mandiri sesuai usianya.',
+    'Luangkan waktu untuk membaca buku, bercerita, dan mengajak Ananda menyampaikan kembali hal yang menarik baginya.',
+    'Ajak Ananda mengamati lingkungan, bertanya, mengelompokkan benda, menghitung, dan menemukan pola melalui kegiatan sederhana.',
+    'Dukung kreativitas Ananda melalui kegiatan menggambar, membangun, bermain peran, musik, gerak, dan eksplorasi bahan yang aman.',
+    'Berikan apresiasi terhadap usaha, ketekunan, dan keberanian Ananda mencoba, bukan hanya terhadap hasil akhir.',
+    'Biasakan percakapan hangat, kerja sama, berbagi tugas, serta penggunaan kata-kata yang santun di rumah.',
+    'Jalin komunikasi secara berkala dengan guru agar stimulasi di rumah dan di sekolah dapat saling mendukung.'
+  ],
+  ortuNote:[
+    'Kami mengucapkan terima kasih atas pendampingan dan kerja sama keluarga dalam mendukung proses belajar dan tumbuh kembang Ananda.',
+    'Kami akan terus mendampingi Ananda melalui pengalaman belajar yang menyenangkan, aman, dan sesuai tahap perkembangannya.',
+    'Keluarga dapat menyampaikan informasi, kebiasaan, minat, atau perkembangan Ananda di rumah sebagai bahan komunikasi dengan guru.',
+    'Apresiasi dan dukungan positif dari keluarga menjadi bagian penting dalam membangun rasa percaya diri dan kemandirian Ananda.'
+  ],
+  noteDokumen:[
+    'Laporan ini disusun berdasarkan pengamatan, percakapan, hasil karya, dokumentasi, dan keterlibatan anak dalam kegiatan sehari-hari.',
+    'Perkembangan setiap anak berlangsung dengan kecepatan dan cara yang berbeda. Hasil laporan menggambarkan proses anak selama periode pembelajaran.',
+    'Informasi dalam laporan ini digunakan sebagai bahan komunikasi dan kerja sama antara sekolah dan keluarga dalam mendukung perkembangan anak.',
+    'Guru dan keluarga dapat menambahkan catatan berdasarkan pengamatan nyata agar informasi dalam laporan semakin lengkap dan bermakna.'
+  ]
+};
+function snippetPicker(target,label){
+  var arr=PAGE_SNIPPETS[target]||[];
+  return '<div class="snippet-tools no-print"><label>'+label+' <select class="snippet-select" aria-label="Pilih narasi '+label+'" data-target="'+target+'"><option value="">Pilih narasi siap pakai…</option>'+arr.map(function(x,i){return '<option value="'+i+'">'+esc(x)+'</option>'}).join('')+'</select></label><button class="tplbtn" type="button" data-act="addSnippet" data-target="'+target+'">+ Tambahkan</button></div>';
+}
 
-  <!-- ================= MODAL PENGATURAN KEPSEK & GANTI PIN ================= -->
-  <div id="modal-settings" class="modal hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>⚙️ Pengaturan Sekolah & Keamanan PIN Kepala Sekolah</h3>
-        <button class="close-modal" data-close="modal-settings">&times;</button>
-      </div>
-      <div class="modal-body">
-        <form id="form-settings">
-          <h4 class="form-section-title">Identitas Sekolah & Penandatangan</h4>
-          <div class="form-group"><label>Nama Yayasan</label><input type="text" id="set-yayasan" /></div>
-          <div class="form-group"><label>Nama Sekolah</label><input type="text" id="set-school-name" /></div>
-          <div class="form-group"><label>Alamat Sekolah</label><input type="text" id="set-school-address" /></div>
-          <div class="form-grid-2">
-            <div><label>NPSN</label><input type="text" id="set-npsn" /></div>
-            <div><label>Semester / Tahun Ajaran</label><input type="text" id="set-semester" /></div>
-            <div><label>Nama Kepala Sekolah</label><input type="text" id="set-kepsek-name" /></div>
-            <div><label>NIP / NUPTK Kepsek</label><input type="text" id="set-kepsek-nip" /></div>
-            <div><label>Nama Guru Kelas</label><input type="text" id="set-guru-name" /></div>
-            <div><label>NIP / NUPTK Guru</label><input type="text" id="set-guru-nip" /></div>
-          </div>
-          <div class="form-group mt-1">
-            <label>Tempat & Tanggal Tanda Tangan Raport</label>
-            <input type="text" id="set-ttd-date" />
-          </div>
+function newStudent(o){
+  var s={id:uid(),nama:'',panggilan:'',nisn:'',nik:'',jk:'',ttl:'',agama:'',ortu:'',tb:'',bb:'',lk:'',sakit:'',izin:'',alpa:'',catatanUmum:'Selama semester ini, Ananda mengikuti berbagai pengalaman belajar melalui bermain, pembiasaan, eksplorasi, karya, dan interaksi bersama teman serta guru.',karya:'Hasil karya anak dapat dipilih dari gambar, kolase, konstruksi balok, kegiatan pra-menulis, atau karya tematik.',proyek:'Ananda terlibat dalam proyek bermain dan eksplorasi sesuai tema pembelajaran.',dokumentasi:'Dokumentasi dapat berupa foto kegiatan bermain, hasil karya, percobaan sederhana, kegiatan kelompok.',berkembang:'Ananda menunjukkan perkembangan melalui pengalaman bermain, pembiasaan, interaksi sosial, dan eksplorasi.',saran:'Lanjutkan stimulasi melalui membaca buku bersama, bermain peran, kegiatan seni, serta pembiasaan mandiri.',ortuNote:'Terima kasih atas pendampingan dan kerja sama keluarga dalam mendukung proses tumbuh kembang Ananda.',sc:{},bn:{}};
+  return Object.assign(s,o||{});
+}
 
-          <h4 class="form-section-title">🔐 Keamanan PIN (Khusus Kepala Sekolah)</h4>
-          <div id="pin-change-box">
-            <div class="form-grid-2">
-              <div><label>PIN Lama</label><input type="password" id="set-old-pin" placeholder="Masukkan PIN saat ini" /></div>
-              <div><label>PIN Baru</label><input type="password" id="set-new-pin" placeholder="Kosongkan jika tidak diubah" /></div>
-            </div>
-            <small class="hint-text">Hanya pengguna yang login menggunakan PIN yang dapat mengubah PIN baru.</small>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-light" data-close="modal-settings">Tutup</button>
-        <button type="submit" form="form-settings" class="btn btn-primary">💾 Simpan Pengaturan</button>
-      </div>
-    </div>
-  </div>
+function seed(){
+  var scale=scaleCopy();
+  var sections=[
+    {id:'agama',title:'Agama dan spiritual',cp:'Doa, ibadah, rasa syukur'},
+    {id:'moral',title:'Moral dan karakter',cp:'Jujur, sopan, peduli, tanggung jawab'},
+    {id:'sosial',title:'Sosial dan emosional',cp:'Berbagi, mengelola emosi, bekerja sama'},
+    {id:'mandiri',title:'Kemandirian dan kesehatan',cp:'Merawat diri, kebersihan, keselamatan'},
+    {id:'indo',title:'Bahasa Indonesia dan literasi awal',cp:'Menyimak, bercerita, mengenal huruf'},
+    {id:'inggris',title:'Bahasa Inggris',cp:'Kosakata, instruksi, lagu, percakapan sederhana'},
+    {id:'numerasi',title:'Numerasi awal',cp:'Angka, berhitung, pola, bentuk, ukuran'},
+    {id:'sains',title:'Sains dan eksplorasi alam',cp:'Mengamati, bertanya, mencoba'},
+    {id:'tekno',title:'Teknologi dan rekayasa sederhana',cp:'Membangun, merancang, mencoba solusi'},
+    {id:'seni',title:'Seni dan kreativitas',cp:'Seni rupa, musik, gerak, imajinasi'},
+    {id:'motorik',title:'Motorik kasar dan halus',cp:'Berlari, melompat, menggambar, menggunting'},
+    {id:'sd',title:'Kesiapan sekolah dasar',cp:'Fokus, mengikuti instruksi, menyelesaikan kegiatan'}
+  ];
+  var blocks=[
+    {id:'agama',title:'A. Agama, spiritual, dan karakter',from:['agama','moral']},
+    {id:'indo',title:'B. Bahasa Indonesia dan literasi',from:['indo']},
+    {id:'inggris',title:'C. Bahasa Inggris',from:['inggris']},
+    {id:'numsains',title:'D. Numerasi dan sains',from:['numerasi','sains']},
+    {id:'sosem',title:'E. Sosial, emosional, dan kemandirian',from:['sosial','mandiri']},
+    {id:'seni',title:'F. Teknologi, seni, dan motorik',from:['tekno','seni','motorik']},
+    {id:'sd',title:'G. Kesiapan sekolah dasar',from:['sd']}
+  ];
+  
+  // Data 26 Peserta Didik TK Mutiara Harapan dari Excel
+  var rawList = [
+    {nama: "ABDUL KHOIRIE", jk: "L", ttl: "Kabupaten Rokan Hilir, 19-01-2021", agama: "Islam", rombel: "Rombel B", ortu: "Zulfan Arianda Pane", nik: "1407081901210001", tb: "110", bb: "20", lk: "51"},
+    {nama: "ALFAEZA SALEH", jk: "L", ttl: "Kampung Panjang, 01-02-2021", agama: "Islam", rombel: "Rombel B", ortu: "Ilham Saleh", nik: "1406040102210001", tb: "110", bb: "24", lk: "51"},
+    {nama: "ATHALLAH RAFIQ SYAHPUTRA", jk: "L", ttl: "Tanjung Medan, 11-02-2021", agama: "Islam", rombel: "Rombel B", ortu: "Iis Purwadi", nik: "1407161102210002", tb: "100", bb: "18", lk: "50"},
+    {nama: "DAFFA AFFNAN FADLAN", jk: "L", ttl: "Kabupaten Rokan Hilir, 06-09-2021", agama: "Islam", rombel: "Rombel B", ortu: "Muhammad Wahyu", nik: "1407160609210001", tb: "110", bb: "25", lk: "51"},
+    {nama: "DANIEL", jk: "L", ttl: "Tanjung Medan, 16-08-2020", agama: "Kristen", rombel: "Rombel B", ortu: "Andika Pratama", nik: "1407161608200002", tb: "111", bb: "20", lk: "51"},
+    {nama: "DESVIA ADRIELLA TOBING", jk: "P", ttl: "Kabupaten Rokan Hilir, 13-12-2020", agama: "Kristen", rombel: "Rombel B", ortu: "Hotben L Tobing", nik: "1407165312200003", tb: "110", bb: "18", lk: "51"},
+    {nama: "DOMINIK NAPATAR SIHOMBING", jk: "L", ttl: "Sintang, 29-06-2021", agama: "Katholik", rombel: "Rombel B", ortu: "Tomson Sihombing", nik: "6105012906210002", tb: "110", bb: "25", lk: "55"},
+    {nama: "FELICYA BIRGITTA OCA", jk: "P", ttl: "Kabupaten Rokan Hilir, 07-07-2021", agama: "Islam", rombel: "Rombel B", ortu: "Muhd Jayusman DP", nik: "1407164707210002", tb: "110", bb: "20", lk: "51"},
+    {nama: "FEODORA TINDAON", jk: "P", ttl: "Bagan Batu, 12-06-2021", agama: "Katholik", rombel: "Rombel B", ortu: "Friwando Sitindaon", nik: "1407165206210003", tb: "120", bb: "23", lk: "54"},
+    {nama: "FUTRI ENGJELIKA SILAEN", jk: "P", ttl: "Bagan Batu, 17-01-2021", agama: "Kristen", rombel: "Rombel B", ortu: "Leonardo Silaen", nik: "1407165701210001", tb: "110", bb: "22", lk: "50"},
+    {nama: "GERALDO SAMOSIR", jk: "L", ttl: "Bagan Batu, 17-05-2021", agama: "Kristen", rombel: "Rombel B", ortu: "Juspair Samosir", nik: "1407161705210002", tb: "110", bb: "24", lk: "51"},
+    {nama: "JACELLYN FELECIA BORU NAINGGOLAN", jk: "P", ttl: "Bagan Batu, 04-04-2021", agama: "Kristen", rombel: "Rombel B", ortu: "Januari H. Nainggolan", nik: "1407164404210002", tb: "115", bb: "25", lk: "52"},
+    {nama: "MARTIN MIRACLE SITORUS", jk: "L", ttl: "Tanjung Medan, 23-09-2020", agama: "Kristen", rombel: "Rombel B", ortu: "Rayanto Sitorus", nik: "1407162309200001", tb: "110", bb: "23", lk: "50"},
+    {nama: "METHA MARIA HARIANJA", jk: "P", ttl: "Kabupaten Deli Serdang, 08-04-2021", agama: "Kristen", rombel: "Rombel B", ortu: "Goklas Hendra Freddy Harianja", nik: "1207264804210002", tb: "110", bb: "20", lk: "50"},
+    {nama: "MUHAMMAD RAFFASYA NUGRAHA", jk: "L", ttl: "Rambah Baru, 01-11-2021", agama: "Islam", rombel: "Rombel B", ortu: "Rama Dwi Nugraha", nik: "1406090111210001", tb: "110", bb: "23", lk: "50"},
+    {nama: "ORLE SEPTIA BORU SINAGA", jk: "P", ttl: "Bagan Batu, 18-09-2020", agama: "Kristen", rombel: "Rombel B", ortu: "Arnius Sinaga", nik: "1407085809200001", tb: "110", bb: "23", lk: "50"},
+    {nama: "QIAN PUSPINATA", jk: "L", ttl: "Solok, 27-06-2021", agama: "Islam", rombel: "Rombel B", ortu: "Eric Mendinata", nik: "1302102706210001", tb: "110", bb: "18", lk: "52"},
+    {nama: "WIRA PRADANA", jk: "L", ttl: "Tanjung Medan, 09-08-2020", agama: "Islam", rombel: "Rombel B", ortu: "Suyetno", nik: "1407160908200001", tb: "110", bb: "20", lk: "51"},
+    {nama: "YULIANDA HUTAGALUNG", jk: "P", ttl: "Tanjung Medan, 14-10-2021", agama: "Kristen", rombel: "Rombel B", ortu: "Juliper Hutagalung", nik: "1407165410210001", tb: "110", bb: "18", lk: "50"},
+    {nama: "MUHAMMAD ADAM", jk: "L", ttl: "Sei Meranti, 2021", agama: "Islam", rombel: "Rombel A", ortu: "-", nik: "-", tb: "110", bb: "19", lk: "50"},
+    {nama: "DELIMA NABABAN", jk: "P", ttl: "Sei Meranti, 2021", agama: "Kristen", rombel: "Rombel A", ortu: "-", nik: "-", tb: "110", bb: "19", lk: "50"},
+    {nama: "ALIANDO ALVARO KENZY", jk: "L", ttl: "Sei Meranti, 2021", agama: "Islam", rombel: "Rombel A", ortu: "-", nik: "-", tb: "110", bb: "19", lk: "50"},
+    {nama: "ANUGRAH SAPUTRA ZEGA", jk: "L", ttl: "Sei Meranti, 2021", agama: "Kristen", rombel: "Rombel A", ortu: "-", nik: "-", tb: "110", bb: "19", lk: "50"},
+    {nama: "MUHAMMAD ALFAHRIANSYAH", jk: "L", ttl: "Sei Meranti, 2021", agama: "Islam", rombel: "Rombel A", ortu: "-", nik: "-", tb: "110", bb: "19", lk: "50"},
+    {nama: "FEODORA TINDAON (A)", jk: "P", ttl: "Bagan Batu, 12-06-2021", agama: "Katholik", rombel: "Rombel A", ortu: "Friwando Sitindaon", nik: "-", tb: "110", bb: "19", lk: "50"},
+    {nama: "KRISTIAN", jk: "L", ttl: "Sei Meranti, 2021", agama: "Kristen", rombel: "Rombel A", ortu: "-", nik: "-", tb: "110", bb: "19", lk: "50"}
+  ];
 
-  <!-- Urutan Pemanggilan JS: Data dulu, baru Logika Aplikasi -->
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+  var st = rawList.map(function(item, idx) {
+    var s = newStudent({
+      nama: item.nama,
+      panggilan: item.nama.split(" ")[0],
+      jk: item.jk,
+      ttl: item.ttl,
+      agama: item.agama,
+      ortu: item.ortu,
+      nik: item.nik,
+      tb: item.tb,
+      bb: item.bb,
+      lk: item.lk,
+      catatanUmum: "Selama semester ini, " + item.nama + " menunjukkan perkembangan yang sangat baik dalam kegiatan bermain dan belajar di TK Mutiara Harapan."
+    });
+    var baseVal = 85 + (idx % 12);
+    sections.forEach(function(sec, i) {
+      var score = Math.min(98, Math.max(70, baseVal - (i % 3) * 4));
+      s.sc[sec.id] = { num: String(score), level: levelFor(score, scale) };
+    });
+    blocks.forEach(function(blk) { regenB(s, blk, scale); });
+    return s;
+  });
+
+  return {
+    school:{
+      yayasan:'YAYASAN PENDIDIKAN MUTIARA HARAPAN',
+      nama:'TK MUTIARA HARAPAN',
+      tagline:'Kec. Tanjung Medan, Kab. Rokan Hilir, Prov. Riau • NPSN: –',
+      alamat:'Sei Meranti, Kec. Tanjung Medan, Kab. Rokan Hilir, Prov. Riau',
+      judul:'LAPORAN PERKEMBANGAN ANAK DIDIK',
+      periode:'Semester I',
+      tahun:'2026/2027',
+      kelas:'Rombel B',
+      guru:'Guru Kelas TK',
+      nipGuru:'',
+      kepsek:'Kepala Sekolah TK Mutiara Harapan',
+      nipKepsek:'',
+      tempat:'Tanjung Medan',
+      tanggal:'19 Desember 2026',
+      accent:'#17766a',
+      notePenilaian:'Kategori ditetapkan berdasarkan bukti pengamatan harian, hasil karya, percakapan, dan keterlibatan anak.',
+      noteDokumen:'Rapor ini disusun untuk memberikan informasi menyeluruh mengenai tumbuh kembang anak.'
+    },
+    scale:scale, sections:sections, blocks:blocks, students:st, cur:st[0].id
+  };
+}
+
+function valid(d){return d&&Array.isArray(d.students)&&d.students.length&&Array.isArray(d.sections)&&d.sections.length&&Array.isArray(d.blocks)}
+function loadData(){
+  var d=null;
+  try{var r=localStorage.getItem(KEY);d=r?JSON.parse(r):null}catch(e){d=null}
+  if(valid(d))return d;
+  try{var r2=localStorage.getItem(OLDKEY);d=r2?JSON.parse(r2):null}catch(e){d=null}
+  if(valid(d))return d;
+  return seed();
+}
+var D=loadData();
+if(D.school&&D.school.accent)document.documentElement.style.setProperty('--p-accent',D.school.accent);
+if(!Array.isArray(D.scale)||D.scale.length<4)D.scale=scaleCopy();
+D.students.forEach(function(s){s.sc=s.sc||{};s.bn=s.bn||{}});
+var ui={tab:'siswa',view:'raport',confirm:null,msg:'Data siap dan tersimpan otomatis.'};
+var saveTimer=null;
+
+function cur(){return D.students.find(function(s){return s.id===D.cur})||D.students[0]}
+function val(p){var a=p.split('.');return a[0]==='school'?D.school[a[1]]:cur()[a[1]]}
+function setv(p,v){var a=p.split('.');if(a[0]==='school')D.school[a[1]]=v;else cur()[a[1]]=v}
+function setStatus(m){ui.msg=m;var e=$('#status');if(e)e.textContent=m}
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(function(){
+    try{localStorage.setItem(KEY,JSON.stringify(D));setStatus('Perubahan tersimpan otomatis.')}
+    catch(e){setStatus('Gagal menyimpan otomatis.')}
+  },350);
+}
+function scored(s){return D.sections.filter(function(x){var r=s.sc[x.id];return r&&parseNum(r.num)!==null}).length}
+
+var CREST='<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="12" fill="#e9a825"/><g stroke="#17766a" stroke-width="4" stroke-linecap="round"><path d="M32 6v8M32 50v8M6 32h8M50 32h8M13.6 13.6l5.7 5.7M44.7 44.7l5.7 5.7M13.6 50.4l5.7-5.7M44.7 19.3l5.7-5.7"/></g></svg>';
+
+function listRows(name,list){
+  return '<ul class="seclist">'+list.map(function(it,i){
+    return '<li class="srow"><span class="sn">'+esc(it.title||'(tanpa judul)')+'</span><span class="acts">'+
+      '<button class="mini" data-act="up" data-list="'+name+'" data-id="'+it.id+'" '+(i===0?'disabled':'')+'>↑</button>'+
+      '<button class="mini" data-act="down" data-list="'+name+'" data-id="'+it.id+'" '+(i===list.length-1?'disabled':'')+'>↓</button>'+
+      '<button class="mini danger" data-act="del" data-list="'+name+'" data-id="'+it.id+'" '+(list.length<2?'disabled':'')+'>'+(ui.confirm==='del:'+name+it.id?'Yakin?':'Hapus')+'</button></span></li>';
+  }).join('')+'</ul>';
+}
+
+function panelHTML(){
+  var tabs=[['siswa','Siswa'],['bidang','Bidang'],['cadangan','Cadangan']].map(function(t){
+    return '<button class="tab" role="tab" data-act="tab" data-tab="'+t[0]+'" aria-selected="'+(ui.tab===t[0])+'">'+t[1]+'</button>';
+  }).join('');
+  var body='';
+  if(ui.tab==='siswa'){
+    body='<p class="hint">Pilih siswa untuk melihat & mengedit raportnya.</p><ul class="slist">'+
+      D.students.map(function(s){
+        return '<li><button class="sbtn" data-act="pick" data-id="'+s.id+'" aria-current="'+(s.id===D.cur)+'"><span class="sn">'+esc(s.nama||'(tanpa nama)')+'</span><span class="ss">Rombel: '+esc(s.rombel||'B')+' • '+scored(s)+'/'+D.sections.length+' bidang</span></button></li>';
+      }).join('')+'</ul>'+
+      '<button class="btn primary" data-act="addStudent">+ Tambah Siswa Baru</button>'+
+      '<button class="btn danger" data-act="delStudent" '+(D.students.length<2?'disabled':'')+'>'+(ui.confirm==='delStudent:'?'Klik sekali lagi untuk menghapus':'Hapus siswa ini')+'</button>';
+  }else if(ui.tab==='bidang'){
+    body='<h4 class="ph">Bidang Penilaian</h4>'+listRows('sec',D.sections)+
+      '<button class="btn primary" data-act="addSec">+ Tambah Bidang</button>'+
+      '<h4 class="ph">Blok Narasi</h4>'+listRows('blk',D.blocks)+
+      '<h4 class="ph">Skala Penilaian</h4>'+
+      '<div class="scgrid"><span class="h">Kode</span><span class="h">Kategori</span><span class="h">Min</span>'+
+      D.scale.map(function(k,i){
+        var last=i===D.scale.length-1;
+        return '<input class="fld" data-scale="'+k.k+'" data-f="abbr" value="'+esc(k.abbr)+'">'+
+          '<input class="fld" data-scale="'+k.k+'" data-f="label" value="'+esc(k.label)+'">'+
+          '<input class="fld" data-scale="'+k.k+'" data-f="min" value="'+esc(k.min)+'" '+(last?'readonly':'')+'>'+
+          '<input class="fld full" data-scale="'+k.k+'" data-f="desc" value="'+esc(k.desc)+'">';
+      }).join('')+'</div>'+
+      '<button class="btn" data-act="reapply">Terapkan Skala</button>';
+  }else{
+    body='<p class="hint">Cadangan data lokal browser.</p>'+
+      '<label for="exp">Ekspor Data (.json)</label><textarea id="exp" class="box" rows="3" readonly></textarea>'+
+      '<button class="btn" data-act="copy">Salin Teks Cadangan</button>'+
+      '<label for="imp">Impor Data</label><textarea id="imp" class="box" rows="3" placeholder="Tempel kode cadangan di sini"></textarea>'+
+      '<button class="btn" data-act="restore">Pulihkan Data</button>'+
+      '<button class="btn danger" data-act="reset">'+(ui.confirm==='reset:'?'Konfirmasi Reset?':'Kembalikan Data Awal')+'</button>';
+  }
+  return '<div class="brand">'+CREST+'<div><b>e-Raport TK</b><span>Mutiara Harapan</span></div></div>'+
+    '<div class="tabs" role="tablist">'+tabs+'</div><div class="pbody">'+body+'</div><p class="status" id="status">'+esc(ui.msg)+'</p>';
+}
+function renderPanel(){ $('#panel').innerHTML=panelHTML(); if(ui.tab==='cadangan'){$('#exp').value=JSON.stringify(D)} }
+
+function renderToolbar(){
+  var r=ui.view==='raport';
+  $('#toolbar').innerHTML=
+    '<div class="seg" role="tablist"><button class="segb" role="tab" data-act="view" data-view="raport" aria-selected="'+r+'">Lembar Raport</button><button class="segb" role="tab" data-act="view" data-view="nilai" aria-selected="'+(!r)+'">Input Nilai Cepat</button></div>'+
+    (r?'<button class="btn primary" data-act="fillAll">Isi Narasi Otomatis</button><button class="btn" data-act="pdf">Cetak / PDF</button><label class="colorpick">Warna <input type="color" id="themeColor" value="'+esc(D.school.accent||'#17766a')+'"></label>'
+      :'<p>Masukkan angka 0–100 pada tabel.</p>');
+}
+
+function fid(p,sfx){return 'f-'+p.replace('.','-')+(sfx||'')}
+function inp(p,ph,cls,sfx){ return '<input class="ed '+(cls||'')+'" id="'+fid(p,sfx)+'" data-p="'+p+'" value="'+esc(val(p))+'" placeholder="'+esc(ph)+'">'; }
+function area(p,rows,ph){ return '<textarea class="ed" id="'+fid(p)+'" data-p="'+p+'" rows="'+rows+'" placeholder="'+esc(ph)+'">'+esc(val(p))+'</textarea>'; }
+function levelOpts(sel){ return '<option value="">–</option>'+D.scale.map(function(k){return '<option value="'+k.k+'" '+(sel===k.k?'selected':'')+'>'+esc(k.abbr)+'</option>'}).join(''); }
+function pillText(lv){return lv?abbrOf(lv)+' · '+labelOf(lv):'Belum dinilai'}
+function runhead(){ return '<div class="runhead"><span class="rh-school">'+esc(D.school.nama)+'</span><span><span class="rh-student">'+esc(cur().nama)+'</span> · <span class="rh-periode">'+esc(D.school.periode)+'</span></span></div>'; }
+function pgno(n){return '<div class="pgno">Halaman '+n+' dari 6</div>'}
+
+function paperHTML(){
+  var s=cur();
+  function row(label,p,ph,unit){
+    return '<div class="mrow"><span>'+label+'</span><input class="ed" id="'+fid(p)+'" data-p="'+p+'" value="'+esc(val(p))+'" inputmode="decimal" placeholder="'+ph+'"><span class="u">'+unit+'</span></div>';
+  }
+  function idr(label,p,ph){return '<div class="idrow"><span>'+label+'</span>'+inp(p,ph,'','-p2')+'</div>'}
+
+  var p1='<section class="page cover">'+CREST.replace('<svg ','<svg class="crest" ')+
+    inp('school.yayasan','Nama Yayasan Pendidikan','tag')+
+    inp('school.nama','Nama Sekolah','p-name')+
+    inp('school.tagline','Tagline / NPSN','tag')+
+    inp('school.alamat','Alamat Sekolah','addr')+
+    '<div class="rule"></div>'+
+    inp('school.judul','Judul Dokumen','jd')+
+    '<div class="semline">'+inp('school.periode','Periode','','-cv')+'<span>·</span>'+inp('school.tahun','Tahun Ajaran','','-cv')+'</div>'+
+    '<div class="coverbox">'+
+      '<div class="row"><span>Nama Anak</span>'+inp('s.nama','Nama Lengkap','big','-cv')+'</div>'+
+      '<div class="row"><span>Kelompok</span>'+inp('school.kelas','Kelompok / Rombel','','-cv')+'</div>'+
+      '<div class="row"><span>Guru Kelas</span>'+inp('school.guru','Nama Guru Kelas','','-cv')+'</div>'+
+    '</div></section>';
+
+  var p2='<section class="page">'+runhead()+'<h2 class="h3">Profil dan Kehadiran</h2><div class="idgrid">'+
+    idr('Nama anak','s.nama','Nama lengkap')+idr('Nama panggilan','s.panggilan','Panggilan')+
+    idr('NISN / Induk','s.nisn','Nomor induk')+idr('NIK','s.nik','Nomor NIK')+
+    idr('Jenis kelamin','s.jk','L/P')+idr('Tanggal lahir','s.ttl','Tgl lahir')+
+    idr('Agama','s.agama','Agama')+idr('Orang tua / wali','s.ortu','Nama orang tua')+
+    idr('Kelompok','school.kelas','Kelompok')+'</div>'+
+    '<div class="two"><div class="box2"><h3 class="h3">Pertumbuhan</h3>'+row('Tinggi badan','s.tb','0','cm')+row('Berat badan','s.bb','0','kg')+row('Lingkar kepala','s.lk','0','cm')+'</div>'+
+    '<div class="box2"><h3 class="h3">Kehadiran</h3>'+row('Sakit','s.sakit','0','hari')+row('Izin','s.izin','0','hari')+row('Alpa','s.alpa','0','hari')+'</div></div>'+
+    '<div class="note"><h3 class="h3">Catatan Umum</h3>'+area('s.catatanUmum',4,'Gambaran umum anak selama semester ini')+'</div>'+pgno(2)+'</section>';
+
+  var rows=D.sections.map(function(sec,i){
+    var r=s.sc[sec.id]||{num:'',level:''};
+    return '<tr><td class="c">'+(i+1)+'</td>'+
+      '<td><input class="ed title" id="sec-'+sec.id+'-title" data-sec="'+sec.id+'" data-f="title" value="'+esc(sec.title)+'">'+
+      '<input class="ed cpi" id="sec-'+sec.id+'-cp" data-sec="'+sec.id+'" data-f="cp" value="'+esc(sec.cp)+'"></td>'+
+      '<td class="c"><input class="ed numin" id="sec-'+sec.id+'-num" data-sec="'+sec.id+'" data-f="num" value="'+esc(r.num||'')+'" inputmode="decimal" placeholder="0–100"></td>'+
+      '<td class="c"><span class="lvlwrap"><select class="lvl" id="sec-'+sec.id+'-level" data-sec="'+sec.id+'" data-f="level" data-lv="'+esc(r.level||'')+'">'+levelOpts(r.level)+'</select></span></td>'+
+      '<td class="kt" id="sec-'+sec.id+'-kt">'+esc(labelOf(r.level))+'</td></tr>';
+  }).join('');
+  var p3='<section class="page">'+runhead()+'<h2 class="h3">Ringkasan Penilaian</h2>'+
+    '<div class="tblwrap"><table class="rtbl"><thead><tr><th class="c">No.</th><th>Bidang Penilaian</th><th class="c">Nilai</th><th class="c">Kode</th><th>Keterangan</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="note">'+inp('school.notePenilaian','Catatan penilaian','sub')+'</div>'+pgno(3)+'</section>';
+
+  var blks=D.blocks.map(function(blk){
+    var b=s.bn[blk.id]||{text:''};var lv=blockLevel(s,blk);
+    return '<div class="blk"><div class="sec-h"><input class="ed sec-title" id="blk-'+blk.id+'-title" data-blk="'+blk.id+'" data-f="title" value="'+esc(blk.title)+'">'+
+      '<span class="lvlpill" id="blk-'+blk.id+'-pill" data-lv="'+lv+'">'+esc(pillText(lv))+'</span></div>'+
+      '<div class="narrative-tools no-print"><select class="praise-select">'+praiseOptions()+'</select><button class="tplbtn" data-act="addPraise" data-id="'+blk.id+'">+ Apresiasi</button><button class="tplbtn" data-act="tpl" data-id="'+blk.id+'">Auto Narasi</button></div>'+
+      '<textarea class="ed" id="blk-'+blk.id+'-text" data-blk="'+blk.id+'" data-f="text" rows="4" placeholder="Ketik atau buat narasi otomatis di sini...">'+esc(b.text)+'</textarea>'+
+      '</div>';
+  }).join('');
+  var p4='<section class="page">'+runhead()+'<h2 class="h3">Narasi Perkembangan</h2>'+blks+pgno(4)+'</section>';
+
+  var p5='<section class="page">'+runhead()+'<h2 class="h3">Portofolio & Karya</h2>'+ 
+    '<div class="note"><h3 class="h3">Hasil Karya</h3>'+snippetPicker('karya','Narasi Karya')+area('s.karya',3,'Tulis catatan hasil karya...')+'</div>'+
+    '<div class="note"><h3 class="h3">Pengalaman Proyek</h3>'+snippetPicker('proyek','Narasi Proyek')+area('s.proyek',3,'Tulis catatan proyek...')+'</div>'+
+    '<div class="note"><h3 class="h3">Dokumentasi Belajar</h3>'+snippetPicker('dokumentasi','Narasi Dokumentasi')+area('s.dokumentasi',3,'Catatan dokumentasi...')+'</div>'+
+    '<div class="note"><h3 class="h3">Perkembangan Utama</h3>'+snippetPicker('berkembang','Narasi Perkembangan')+area('s.berkembang',3,'Catatan perkembangan...')+'</div>'+pgno(5)+'</section>';
+
+  var p6='<section class="page">'+runhead()+'<h2 class="h3">Rekomendasi & Pengesahan</h2>'+
+    '<div class="note"><h3 class="h3">Saran Pembiasaan di Rumah</h3>'+snippetPicker('saran','Rekomendasi')+area('s.saran',4,'Tuliskan saran di rumah...')+'</div>'+
+    '<div class="note"><h3 class="h3">Tanggapan Orang Tua</h3>'+snippetPicker('ortuNote','Catatan Keluarga')+area('s.ortuNote',3,'Catatan atau balikan orang tua...')+'</div>'+
+    '<div class="signwrap"><div class="place">'+inp('school.tempat','Kota')+'<span>,</span>'+inp('school.tanggal','Tanggal')+'</div>'+
+    '<div class="sign"><div><div class="lab">Orang Tua / Wali</div><div class="gap"></div><div class="line"></div></div>'+
+    '<div><div class="lab">Guru Kelas</div><div class="gap"></div>'+inp('school.guru','Nama guru','nm','-sg')+'</div>'+
+    '<div><div class="lab">Kepala Sekolah</div><div class="gap"></div>'+inp('school.kepsek','Nama kepsek','nm')+'</div></div></div>'+pgno(6)+'</section>';
+
+  return '<div class="sheets" id="paper">'+p1+p2+p3+p4+p5+p6+'</div>';
+}
+
+function grow(el){el.style.height='auto';el.style.height=(el.scrollHeight+2)+'px'}
+function growAll(){document.querySelectorAll('#paperwrap textarea').forEach(grow)}
+function renderPaper(){ $('#paperwrap').innerHTML=paperHTML(); growAll(); }
+
+function renderNilai(){
+  var head='<tr><th scope="col">Siswa</th>'+D.sections.map(function(sec){return '<th scope="col">'+esc(sec.title)+'</th>'}).join('')+'<th scope="col">Terisi</th></tr>';
+  var rows=D.students.map(function(s){
+    return '<tr data-sid="'+s.id+'"><th scope="row"><button class="linkbtn" data-act="open" data-id="'+s.id+'">'+esc(s.nama||'(tanpa nama)')+'</button></th>'+
+      D.sections.map(function(sec){
+        var r=s.sc[sec.id]||{};
+        return '<td><input class="nin" id="n-'+s.id+'-'+sec.id+'" data-nsid="'+s.id+'" data-sec="'+sec.id+'" value="'+esc(r.num||'')+'" inputmode="decimal" placeholder="–"><span class="cabbr">'+esc(abbrOf(r.level))+'</span></td>';
+      }).join('')+'<td class="cnt">'+scored(s)+'/'+D.sections.length+'</td></tr>';
+  }).join('');
+  $('#paperwrap').innerHTML='<div class="nilai no-print"><div class="tblwrap"><table class="ntbl"><thead>'+head+'</thead><tbody>'+rows+'</tbody></table></div>'+
+    '<p class="hint">'+legendText()+'</p></div>';
+}
+
+function renderMain(){ renderToolbar(); if(ui.view==='nilai')renderNilai(); else renderPaper(); }
+function renderAll(){ renderPanel(); renderMain(); }
+
+function refreshBlocks(){
+  var s=cur();
+  D.blocks.forEach(function(blk){
+    var b=getB(s,blk.id);
+    var ta=$('#blk-'+blk.id+'-text');if(ta&&ta.value!==b.text){ta.value=b.text;grow(ta)}
+    var lv=blockLevel(s,blk);
+    var pl=$('#blk-'+blk.id+'-pill');if(pl){pl.dataset.lv=lv;pl.textContent=pillText(lv)}
+  });
+}
+function refreshRow(secId){
+  var r=getS(cur(),secId);
+  var sel=$('#sec-'+secId+'-level');if(sel){sel.value=r.level||'';sel.dataset.lv=r.level||''}
+  var kt=$('#sec-'+secId+'-kt');if(kt)kt.textContent=labelOf(r.level);
+  refreshBlocks();
+}
+function syncPath(p,src){
+  document.querySelectorAll('[data-p="'+p+'"]').forEach(function(el){if(el!==src)el.value=src.value});
+}
+
+document.addEventListener('input',function(e){
+  var t=e.target,ds=t.dataset||{};
+  if(ds.p){
+    setv(ds.p,t.value);syncPath(ds.p,t);
+    if(ds.p==='s.nama'&&ui.tab==='siswa')renderPanel();
+  }else if(ds.scale!=null){
+    var k=sk(ds.scale);if(!k)return;
+    if(ds.f==='min'){var v=parseFloat(String(t.value).replace(',','.'));k.min=isNaN(v)?0:v}else k[ds.f]=t.value;
+    renderMain();save();return;
+  }else if(ds.nsid){
+    var st=D.students.find(function(x){return x.id===ds.nsid});if(!st)return;
+    var norm=setNum(st,ds.sec,t.value);
+    if(norm!==t.value)t.value=norm;
+    var ab=t.nextElementSibling;if(ab)ab.textContent=abbrOf(getS(st,ds.sec).level);
+    save();return;
+  }else if(ds.blk){
+    var blk=D.blocks.find(function(x){return x.id===ds.blk});if(!blk)return;
+    if(ds.f==='title'){blk.title=t.value;if(ui.tab==='bidang')renderPanel()}
+    else{var b=getB(cur(),blk.id);b.text=t.value;b.auto=false}
+  }else if(ds.sec){
+    var sec=D.sections.find(function(x){return x.id===ds.sec});if(!sec)return;
+    var f=ds.f,s=cur();
+    if(f==='title'||f==='cp'){sec[f]=t.value;if(f==='title'&&ui.tab==='bidang')renderPanel()}
+    else if(f==='num'){
+      var nm=setNum(s,sec.id,t.value);if(nm!==t.value)t.value=nm;
+      refreshRow(sec.id);
+    }else if(f==='level'){
+      getS(s,sec.id).level=t.value;refreshRow(sec.id);
+    }
+  }else return;
+  if(t.tagName==='TEXTAREA')grow(t);
+  save();
+});
+
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-act]');if(!b)return;
+  var act=b.dataset.act,id=b.dataset.id||'';
+  var s=cur();
+  switch(act){
+    case 'tab':ui.tab=b.dataset.tab;renderPanel();break;
+    case 'view':ui.view=b.dataset.view;renderMain();break;
+    case 'pick':D.cur=id;ui.view='raport';renderAll();save();break;
+    case 'open':D.cur=id;ui.view='raport';renderAll();save();window.scrollTo(0,0);break;
+    case 'addStudent':
+      var ns=newStudent({nama:'Siswa Baru'});
+      D.blocks.forEach(function(bk){regenB(ns,bk)});
+      D.students.push(ns);D.cur=ns.id;ui.view='raport';renderAll();save();break;
+    case 'delStudent':
+      if(D.students.length>1){D.students=D.students.filter(function(x){return x.id!==s.id});D.cur=D.students[0].id;renderAll();save()}
+      break;
+    case 'addSnippet':
+      var target=b.dataset.target;
+      var noteBox=b.parentElement.parentElement.querySelector('textarea[data-p="'+(target==='noteDokumen'?'school.noteDokumen':'s.'+target)+'"]');
+      var snippetSelect=b.parentElement.querySelector('.snippet-select');
+      var snippets=PAGE_SNIPPETS[target]||[];
+      var chosen=snippetSelect&&snippetSelect.value!==''?snippets[Number(snippetSelect.value)]:'';
+      if(chosen&&noteBox){
+        var current=noteBox.value.trim();
+        noteBox.value=current?(current+'\n\n'+chosen):chosen;
+        noteBox.dispatchEvent(new Event('input',{bubbles:true}));
+        grow(noteBox);save();
+      }
+      break;
+    case 'addPraise':
+      var praiseSel=b.parentElement.querySelector('.praise-select');
+      var praise=praiseSentence(praiseSel&&praiseSel.value);
+      if(praise){
+        var praiseData=getB(s,id);var praiseText=praise.replace(/^Ananda/,callName(s));
+        if(praiseData.text.indexOf(praiseText)<0){
+          praiseData.text=(praiseData.text.trim()?praiseData.text.trim()+' ':'')+praiseText;
+          praiseData.auto=false;refreshBlocks();save();
+        }
+      }
+      break;
+    case 'tpl':
+      var blk=D.blocks.find(function(x){return x.id===id});if(!blk)return;
+      var bb=getB(s,id);
+      bb.text=tplB(blk,blockLevel(s,blk)||'l2',callName(s));bb.auto=true;
+      refreshBlocks();save();break;
+    case 'fillAll':
+      D.blocks.forEach(function(blk2){var m=getB(s,blk2.id);if(!m.text||!m.text.trim()){m.auto=false;regenB(s,blk2)}});
+      refreshBlocks();save();break;
+    case 'pdf':window.print();break;
+  }
+});
+
+document.addEventListener('change',function(e){
+  if(e.target.id==='themeColor'){
+    D.school.accent=e.target.value;
+    document.documentElement.style.setProperty('--p-accent',e.target.value);
+    renderMain();save();
+  }
+});
+
+window.addEventListener('resize',growAll);
+renderAll();
+})();
+</script>
 </body>
 </html>
